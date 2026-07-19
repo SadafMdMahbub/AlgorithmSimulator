@@ -1,5 +1,7 @@
 # 🎯 AlgoViz — Algorithm Visualizer
 
+download file in and store in file named AlgoViz. Then open xampp/htdocs. Paste it and then run both project and xampp on browser.
+
 An interactive **algorithm visualization platform** built for **CSE373: Design and Analysis of Algorithms**. Watch sorting, searching, greedy, dynamic programming, graph, and string matching algorithms come to life with real-time visual feedback.
 
 > 🌐 **Live Demo**: Open `index.html` to get started.
@@ -54,23 +56,44 @@ A separate interactive **Binary Search Tree** tool (`sim.js`) featuring:
 
 ## 🚀 Getting Started
 
-1. **Clone the repo**
+### 📋 Prerequisites (for full features)
+For **login, registration, usage history, and session management**, you need:
+- **XAMPP** (or any Apache + PHP + MySQL stack)
+
+### 🔧 Setup Instructions
+
+1. **Clone or copy the project** into XAMPP's `htdocs` folder:
    ```bash
    git clone https://github.com/SadafMdMahbub/AlgorithmSimulator.git
-   cd AlgorithmSimulator
    ```
+   **OR** copy the project folder into `C:\xampp\htdocs\algoviz`
 
-2. **Open the app**
-   - Open `index.html` in any modern browser (Chrome, Firefox, Edge)
-   - Register a new account or log in with existing credentials
+2. **Start XAMPP**
+   - Open XAMPP Control Panel
+   - Start **Apache** (port 80)
+   - Start **MySQL** (port 3306)
+
+3. **Initialize the database** (first time only)
+   - Open http://localhost/phpmyadmin
+   - Import `database/init_db.sql`
+   - OR run from terminal:
+     ```bash
+     mysql -u root < database/init_db.sql
+     ```
+
+4. **Open the app**
+   - Visit **http://localhost/algoviz/index.html** in any modern browser
+   - Register a new account or log in
    - Select **CSE373** from the dashboard
    - Choose an algorithm from the left sidebar and click **Play ▶**
 
-3. **Try the Binary Tree Simulator**
-   - Open `sim.js` in your browser (yes, it's a self-contained HTML file!)
+> ⚠️ **Important**: Always access via `http://localhost/algoviz/`, not by double-clicking the files! PHP requires the web server.
+
+5. **Try the Binary Tree Simulator**
+   - Open `sim.js` in your browser (self-contained HTML file)
    - Insert values, run traversals, and explore BST properties
 
-> 💡 No server required — everything runs client-side with localStorage.
+> 💡 **Offline mode**: Sorting/searching visualizations work without a server. Login/History features require XAMPP.
 
 ---
 

@@ -1,0 +1,2238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AlgoSim — Light & Vibrant</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet"/>
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
+
+    <style>
+        /* ——————————— RESET & BASE ——————————— */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-body: #f5f7fc;
+            --bg-card: #ffffff;
+            --bg-sidebar: #f0f2f8;
+            --border-light: #e2e8f0;
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --accent-1: #6366f1;
+            --accent-2: #8b5cf6;
+            --accent-3: #06b6d4;
+            --accent-4: #f59e0b;
+            --accent-5: #10b981;
+            --accent-6: #ef4444;
+            --gradient-main: linear-gradient(135deg, #6366f1, #8b5cf6, #06b6d4);
+            --shadow-card: 0 8px 30px rgba(0, 0, 0, 0.06);
+            --shadow-hover: 0 12px 40px rgba(99, 102, 241, 0.12);
+            --radius: 16px;
+            --radius-sm: 10px;
+            --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        html {
+            font-size: 16px;
+        }
+
+        body {
+            font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-body);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.6;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-body);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent-1);
+            border-radius: 10px;
+        }
+
+        /* ——— HEADER ——— */
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.80);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-light);
+            padding: 0 2rem;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--text-primary);
+        }
+
+        .header-brand .brand-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-sm);
+            background: var(--gradient-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+        }
+
+        .header-brand span {
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .header-actions .badge {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            padding: 4px 16px;
+            border-radius: 100px;
+            background: rgba(99, 102, 241, 0.10);
+            color: var(--accent-1);
+            border: 1px solid rgba(99, 102, 241, 0.15);
+        }
+
+        .header-actions .status-dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--accent-5);
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.3);
+            animation: pulse-dot 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.85); }
+        }
+
+        /* ——— APP WRAPPER ——— */
+        .app-wrapper {
+            display: flex;
+            flex: 1;
+            height: calc(100vh - 64px);
+            overflow: hidden;
+            gap: 0;
+        }
+
+        /* ——— LEFT SIDEBAR ——— */
+        .sidebar-left {
+            width: 260px;
+            min-width: 260px;
+            background: var(--bg-sidebar);
+            border-right: 1px solid var(--border-light);
+            padding: 1.5rem 1rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .sidebar-left .section-title {
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            margin-bottom: 0.4rem;
+            padding-left: 4px;
+        }
+
+        .algo-group {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .algo-group .group-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            padding: 0.2rem 0.5rem;
+            opacity: 0.7;
+            letter-spacing: 0.04em;
+        }
+
+        .algo-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0.5rem 0.75rem;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            position: relative;
+            border: 1px solid transparent;
+        }
+
+        .algo-item:hover {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border-color: var(--border-light);
+            box-shadow: var(--shadow-card);
+        }
+
+        .algo-item.active {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border-color: var(--accent-1);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .algo-item.active::before {
+            content: '';
+            position: absolute;
+            left: -1px;
+            top: 8px;
+            bottom: 8px;
+            width: 4px;
+            border-radius: 0 4px 4px 0;
+            background: var(--gradient-main);
+        }
+
+        .algo-item .icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            background: rgba(99, 102, 241, 0.06);
+            color: var(--accent-1);
+            flex-shrink: 0;
+            transition: var(--transition);
+        }
+
+        .algo-item.active .icon {
+            background: rgba(99, 102, 241, 0.12);
+            color: var(--accent-2);
+        }
+
+        .algo-item .label {
+            flex: 1;
+        }
+
+        .algo-item .shortcut {
+            font-size: 0.6rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            background: rgba(0,0,0,0.04);
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        /* ——— CENTER ——— */
+        .center-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-body);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .center-area .viz-header {
+            padding: 0.75rem 2rem;
+            border-bottom: 1px solid var(--border-light);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+            background: rgba(255,255,255,0.5);
+            backdrop-filter: blur(6px);
+        }
+
+        .viz-header .viz-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .viz-header .viz-title .algo-name {
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .viz-header .viz-stats {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .viz-header .viz-stats span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .viz-header .viz-stats .num {
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        .viz-canvas-wrapper {
+            align-items: stretch !important;
+            gap: 1.5rem;
+            justify-content: flex-start !important;
+
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            position: relative;
+            background: var(--bg-body);
+        }
+
+        .viz-container {
+            width: 100%;
+            max-width: 880px;
+            height: 100%;
+            max-height: 500px;
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            border: 1px solid var(--border-light);
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-card);
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .viz-container .viz-inner {
+            width: 100%;
+            height: 100%;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        /* ——— Array bars ——— */
+        .array-visual {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            height: 80%;
+            padding: 0 0.5rem;
+        }
+
+        .array-bar {
+            flex: 1;
+            max-width: 64px;
+            min-width: 24px;
+            border-radius: 6px 6px 0 0;
+            background: var(--gradient-main);
+            transition: height 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.3s, transform 0.3s;
+            position: relative;
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.08);
+            transform-origin: bottom;
+            min-height: 12px;
+        }
+
+        .array-bar:hover {
+            transform: scaleY(1.03);
+            filter: brightness(1.05);
+        }
+
+        .array-bar .bar-label {
+            position: absolute;
+            bottom: -22px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.6rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+
+        .array-bar .bar-index {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.5rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            opacity: 0.5;
+        }
+
+        /* ——— Tree visual ——— */
+        .tree-visual {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            width: 100%;
+            height: 80%;
+        }
+
+        .tree-row {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+
+        .tree-node {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--gradient-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: #fff;
+            box-shadow: 0 4px 16px rgba(99, 102, 241, 0.2);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .tree-node::before {
+            content: '';
+            position: absolute;
+            top: -14px;
+            left: 50%;
+            width: 2px;
+            height: 14px;
+            background: var(--border-light);
+            display: none;
+        }
+
+        .tree-node.has-parent::before {
+            display: block;
+        }
+
+        .tree-node:hover {
+            transform: scale(1.08);
+            box-shadow: 0 4px 24px rgba(99, 102, 241, 0.3);
+        }
+
+        .tree-node.empty {
+            background: rgba(0,0,0,0.04);
+            border: 2px dashed var(--border-light);
+            box-shadow: none;
+            color: var(--text-muted);
+        }
+
+        /* ——— Graph ——— */
+        .graph-visual {
+            width: 100%;
+            height: 80%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .graph-node {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--gradient-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: #fff;
+            position: absolute;
+            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.15);
+            transition: var(--transition);
+            cursor: default;
+        }
+
+        .graph-node:hover {
+            transform: scale(1.08);
+            box-shadow: 0 4px 28px rgba(99, 102, 241, 0.25);
+        }
+
+        /* ——— Fibonacci recursion tree ——— */
+        .fib-visual {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            width: 100%;
+        }
+
+        .fib-tree {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .fib-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .fib-node {
+            padding: 6px 16px;
+            border-radius: 20px;
+            background: rgba(99, 102, 241, 0.06);
+            border: 1px solid rgba(99, 102, 241, 0.10);
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            transition: var(--transition);
+        }
+
+        .fib-node.highlight {
+            background: rgba(99, 102, 241, 0.12);
+            border-color: var(--accent-1);
+            color: var(--text-primary);
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.06);
+        }
+
+        /* ——— Huffman ——— */
+        .huffman-visual {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            height: 80%;
+        }
+
+        .huffman-tree {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* ——— Live iteration corner box ——— */
+        .live-iteration-box {
+            position: absolute;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            width: 260px;
+            max-width: 280px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-sm);
+            padding: 0.8rem 1rem;
+            box-shadow: var(--shadow-card), 0 0 40px rgba(99, 102, 241, 0.06);
+            backdrop-filter: blur(8px);
+            transition: var(--transition);
+            z-index: 10;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .live-iteration-box .box-title {
+            font-weight: 600;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 6px;
+        }
+
+        .live-iteration-box .box-title i {
+            color: var(--accent-1);
+        }
+
+        .live-iteration-box .iteration-content {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .live-iteration-box .iteration-content .line {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px dashed var(--border-light);
+            padding: 4px 0;
+        }
+
+        .live-iteration-box .iteration-content .line:last-child {
+            border-bottom: none;
+        }
+
+        .live-iteration-box .iteration-content .label {
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .live-iteration-box .iteration-content .value {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .live-iteration-box .iteration-content .value.highlight {
+            color: var(--accent-1);
+        }
+
+        /* small tree in corner (for sorting/recursion/huffman) */
+        .corner-tree {
+            margin-top: 6px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            font-size: 0.65rem;
+        }
+
+        .corner-tree .corner-row {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .corner-tree .corner-node {
+            padding: 2px 10px;
+            border-radius: 12px;
+            background: rgba(99, 102, 241, 0.06);
+            border: 1px solid rgba(99, 102, 241, 0.08);
+            color: var(--text-secondary);
+        }
+
+        /* ——— RIGHT SIDEBAR ——— */
+        .sidebar-right {
+            width: 260px;
+            min-width: 260px;
+            background: var(--bg-sidebar);
+            border-left: 1px solid var(--border-light);
+            padding: 1.5rem 1rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .sidebar-right .panel-title {
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .control-group .control-label {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .control-group .control-label .val {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .input-row input,
+        .input-row select {
+            flex: 1;
+            padding: 0.5rem 0.75rem;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-light);
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 0.8rem;
+            transition: var(--transition);
+            outline: none;
+            min-width: 0;
+        }
+
+        .input-row input:focus,
+        .input-row select:focus {
+            border-color: var(--accent-1);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.10);
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-sm);
+            border: none;
+            font-family: inherit;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background: var(--gradient-main);
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-light);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-body);
+            color: var(--text-primary);
+            border-color: var(--text-muted);
+        }
+
+        .btn-danger {
+            background: rgba(239, 68, 68, 0.08);
+            color: var(--accent-6);
+            border: 1px solid rgba(239, 68, 68, 0.10);
+        }
+
+        .btn-danger:hover {
+            background: rgba(239, 68, 68, 0.12);
+            border-color: var(--accent-6);
+        }
+
+        .btn-success {
+            background: rgba(16, 185, 129, 0.08);
+            color: var(--accent-5);
+            border: 1px solid rgba(16, 185, 129, 0.10);
+        }
+
+        .btn-success:hover {
+            background: rgba(16, 185, 129, 0.12);
+            border-color: var(--accent-5);
+        }
+
+        .btn-icon {
+            width: 36px;
+            height: 36px;
+            padding: 0;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-icon:hover {
+            background: var(--bg-body);
+            color: var(--text-primary);
+            border-color: var(--text-muted);
+        }
+
+        .btn-icon.active {
+            background: rgba(99, 102, 241, 0.08);
+            border-color: var(--accent-1);
+            color: var(--accent-1);
+        }
+
+        .controls-actions {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .controls-actions .btn {
+            flex: 1;
+            min-width: 40px;
+        }
+
+        .slider-control {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .slider-control input[type="range"] {
+            flex: 1;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 4px;
+            border-radius: 4px;
+            background: var(--border-light);
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .slider-control input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--gradient-main);
+            cursor: pointer;
+            box-shadow: 0 0 12px rgba(99, 102, 241, 0.2);
+        }
+
+        .slider-control input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: none;
+            background: var(--gradient-main);
+            cursor: pointer;
+        }
+
+        .slider-control .slider-value {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            min-width: 28px;
+            text-align: center;
+        }
+
+        .divider {
+            border: none;
+            border-top: 1px solid var(--border-light);
+            margin: 0.25rem 0;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .stat-item {
+            background: var(--bg-card);
+            border-radius: var(--radius-sm);
+            padding: 0.5rem 0.75rem;
+            border: 1px solid var(--border-light);
+        }
+
+        .stat-item .stat-label {
+            font-size: 0.55rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .stat-item .stat-value {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-top: 2px;
+        }
+
+        /* ——— Responsive ——— */
+        @media (max-width: 1200px) {
+            .sidebar-left { width: 220px; min-width: 220px; }
+            .sidebar-right { width: 220px; min-width: 220px; }
+            .live-iteration-box { width: 200px; }
+        }
+
+        @media (max-width: 992px) {
+            .app-wrapper { flex-direction: column; height: auto; overflow-y: auto; }
+            .sidebar-left { width: 100%; min-width: unset; flex-direction: row; flex-wrap: wrap; padding: 1rem; border-right: none; border-bottom: 1px solid var(--border-light); max-height: 200px; overflow-y: auto; gap: 0.5rem; }
+            .sidebar-left .section-title { width: 100%; }
+            .algo-group { flex: 1; min-width: 120px; }
+            .center-area { min-height: 500px; }
+            .sidebar-right { width: 100%; min-width: unset; border-left: none; border-top: 1px solid var(--border-light); flex-direction: row; flex-wrap: wrap; padding: 1rem; max-height: 280px; overflow-y: auto; }
+            .sidebar-right .panel-title { width: 100%; }
+            .sidebar-right .control-group { flex: 1; min-width: 160px; }
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+            .live-iteration-box { position: relative; bottom: auto; right: auto; width: 100%; max-width: 100%; margin-top: 1rem; }
+        }
+
+        @media (max-width: 600px) {
+            .header { padding: 0 1rem; }
+            .header-brand { font-size: 1rem; }
+            .header-brand .brand-icon { width: 30px; height: 30px; font-size: 0.9rem; }
+            .viz-header { flex-direction: column; align-items: flex-start; gap: 6px; padding: 0.75rem 1rem; }
+            .viz-header .viz-stats { flex-wrap: wrap; gap: 8px; }
+            .viz-canvas-wrapper {
+            align-items: stretch !important;
+            gap: 1.5rem;
+            justify-content: flex-start !important;
+ padding: 0.75rem; }
+            .viz-container { max-height: 380px; }
+            .array-bar { min-width: 16px; }
+            .live-iteration-box { font-size: 0.7rem; padding: 0.6rem 0.8rem; }
+        }
+
+        /* ——— Animations ——— */
+        @keyframes fadeSlideUp {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .algo-item { animation: fadeSlideUp 0.25s ease both; }
+        .algo-item:nth-child(1) { animation-delay: 0.02s; }
+        .algo-item:nth-child(2) { animation-delay: 0.04s; }
+        .algo-item:nth-child(3) { animation-delay: 0.06s; }
+        .algo-item:nth-child(4) { animation-delay: 0.08s; }
+        .algo-item:nth-child(5) { animation-delay: 0.10s; }
+        .algo-item:nth-child(6) { animation-delay: 0.12s; }
+
+        .viz-container.active-glow {
+            box-shadow: var(--shadow-card), 0 0 60px rgba(99, 102, 241, 0.04);
+        }
+
+        .text-gradient {
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ——— HEADER ——— -->
+    <header class="header">
+        <div class="header-brand">
+            <div class="brand-icon"><i class="fas fa-code"></i></div>
+            <span>AlgoViz</span>
+            <span style="font-size:0.6rem;font-weight:500;color:var(--text-muted);background:var(--bg-body);padding:2px 12px;border-radius:100px;border:1px solid var(--border-light);">Light</span>
+        </div>
+        <div class="header-actions">
+            <span class="badge"><i class="fas fa-play" style="font-size:0.6rem;margin-right:4px;"></i> Live</span>
+            <span class="status-dot"></span>
+            <span style="font-size:0.7rem;color:var(--text-muted);">v2.1</span>
+        </div>
+    </header>
+
+    <!-- ——— APP WRAPPER ——— -->
+    <div class="app-wrapper">
+
+        <!-- LEFT SIDEBAR -->
+        <aside class="sidebar-left">
+            <div>
+                <div class="section-title" style="color:var(--accent-1); margin-top:0.5rem;"><i class="fas fa-graduation-cap" style="margin-right:6px;"></i> CSE Core</div>
+
+                <div class="algo-group">
+                    <div class="group-label"><i class="fas fa-code-branch" style="margin-right:6px;"></i> CSE 225: Data Structures</div>
+                    <div class="algo-item active" data-algo="stack"><span class="icon"><i class="fas fa-arrow-up"></i></span><span class="label">Stack</span></div>
+                    <div class="algo-item" data-algo="queue"><span class="icon"><i class="fas fa-arrow-right"></i></span><span class="label">Queue</span></div>
+                    <div class="algo-item" data-algo="linkedlist"><span class="icon"><i class="fas fa-link"></i></span><span class="label">Linked List</span></div>
+                    <div class="algo-item" data-algo="binarytree"><span class="icon"><i class="fas fa-tree"></i></span><span class="label">Binary Tree</span></div>
+                    <div class="algo-item" data-algo="bfs"><span class="icon"><i class="fas fa-project-diagram"></i></span><span class="label">BFS & DFS Search</span></div>
+                    <div class="algo-item" data-algo="dijkstra"><span class="icon"><i class="fas fa-route"></i></span><span class="label">Dijkstra</span></div>
+                    <div class="algo-item" data-algo="quicksort"><span class="icon"><i class="fas fa-sort-amount-up"></i></span><span class="label">Quick/Merge Sort</span></div>
+                </div>
+
+                <div class="algo-group" style="margin-top:1rem;">
+                    <div class="group-label"><i class="fas fa-database" style="margin-right:6px;"></i> CSE 311: Database Sys.</div>
+                    <div class="algo-item" data-algo="btree"><span class="icon"><i class="fas fa-sitemap"></i></span><span class="label">B+ Tree Indexing</span></div>
+                    <div class="algo-item" data-algo="relational"><span class="icon"><i class="fas fa-table"></i></span><span class="label">Relational Algebra</span></div>
+                </div>
+                
+                <div class="section-title" style="color:var(--accent-2); margin-top:1.5rem;"><i class="fas fa-calculator" style="margin-right:6px;"></i> Math Core</div>
+
+                <div class="algo-group">
+                    <div class="group-label"><i class="fas fa-square-root-alt" style="margin-right:6px;"></i> CSE 173: Discrete Math</div>
+                    <div class="algo-item" data-algo="fibonacci"><span class="icon"><i class="fas fa-spiral"></i></span><span class="label">Fibonacci Recursion</span></div>
+                </div>
+
+                <div class="algo-group" style="margin-top:1rem;">
+                    <div class="group-label"><i class="fas fa-border-all" style="margin-right:6px;"></i> MAT 125: Linear Algebra</div>
+                    <div class="algo-item" data-algo="matrix"><span class="icon"><i class="fas fa-border-none"></i></span><span class="label">Matrix Operations</span></div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- CENTER -->
+        <main class="center-area">
+
+            <div class="viz-header">
+                <div class="viz-title">
+                    <i class="fas fa-eye" style="color:var(--text-muted);font-size:0.8rem;"></i>
+                    <span>Visualizing</span>
+                    <span class="algo-name" id="currentAlgoName">Stack</span>
+                    <span class="algo-badge" style="font-size:0.55rem;font-weight:600;padding:2px 12px;border-radius:100px;background:rgba(99,102,241,0.08);color:var(--accent-1);border:1px solid rgba(99,102,241,0.10);" id="currentAlgoCategory">Array</span>
+                </div>
+                <div class="viz-stats">
+                    <span><i class="fas fa-database"></i> Size: <span class="num" id="dataSize">8</span></span>
+                    <span><i class="fas fa-step-forward"></i> Steps: <span class="num" id="stepCount">0</span></span>
+                    <span><i class="fas fa-clock"></i> <span class="num" id="timeComplexity">O(n)</span></span>
+                </div>
+            </div>
+
+            <div class="viz-canvas-wrapper">
+
+                
+                <!-- Educational Panel (New) -->
+                <div class="edu-panel" id="eduPanel" style="flex: 0 0 320px; background: var(--bg-card); border-radius: var(--radius-md); border: 1px solid var(--border-light); padding: 1.5rem; display: flex; flex-direction: column; gap: 1.5rem; overflow-y: auto; box-shadow: var(--shadow-card); backdrop-filter: blur(10px); display: none;">
+                    <h2 id="eduTitle" style="font-size: 1.1rem; color: var(--text-primary); margin: 0; display: flex; align-items: center; gap: 8px;"><i class="fas fa-book-open" style="color: var(--accent-1);"></i> Stack</h2>
+                    <div>
+                        <h3 style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.5rem; letter-spacing: 0.05em;">What is it?</h3>
+                        <p id="eduDesc" style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; margin: 0;">Description.</p>
+                    </div>
+                    <div>
+                        <h3 style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.5rem; letter-spacing: 0.05em;">Real-World Uses</h3>
+                        <ul id="eduUses" style="font-size: 0.85rem; color: var(--text-secondary); padding-left: 1.2rem; margin: 0; line-height: 1.5;">
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.5rem; letter-spacing: 0.05em;">Time Complexity</h3>
+                        <table style="width: 100%; font-size: 0.8rem; border-collapse: collapse; text-align: left;">
+                            <tr style="border-bottom: 1px solid var(--border-light);">
+                                <th style="padding: 6px 4px; color: var(--text-muted);">Op</th>
+                                <th style="padding: 6px 4px; color: var(--text-muted);">Avg</th>
+                                <th style="padding: 6px 4px; color: var(--text-muted);">Worst</th>
+                            </tr>
+                            <tbody id="eduComplexity">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="viz-container active-glow" id="vizContainer" style="flex: 1;">
+
+                    <div class="viz-inner" id="vizInner">
+
+                        <!-- Array visual (default) -->
+                        <div class="array-visual" id="arrayVisual">
+                            <div class="array-bar" style="height:28%;" data-value="5"><span class="bar-index">0</span><span class="bar-label">5</span></div>
+                            <div class="array-bar" style="height:44%;" data-value="8"><span class="bar-index">1</span><span class="bar-label">8</span></div>
+                            <div class="array-bar" style="height:22%;" data-value="3"><span class="bar-index">2</span><span class="bar-label">3</span></div>
+                            <div class="array-bar" style="height:66%;" data-value="12"><span class="bar-index">3</span><span class="bar-label">12</span></div>
+                            <div class="array-bar" style="height:38%;" data-value="7"><span class="bar-index">4</span><span class="bar-label">7</span></div>
+                            <div class="array-bar" style="height:88%;" data-value="18"><span class="bar-index">5</span><span class="bar-label">18</span></div>
+                            <div class="array-bar" style="height:50%;" data-value="9"><span class="bar-index">6</span><span class="bar-label">9</span></div>
+                            <div class="array-bar" style="height:72%;" data-value="14"><span class="bar-index">7</span><span class="bar-label">14</span></div>
+                        </div>
+
+                        
+                        <!-- Stack Visual (Glass Cylinder) -->
+                        <div class="stack-visual" id="stackVisual" style="display:none; width: 100%; height: 100%; align-items: flex-end; justify-content: center; padding-bottom: 20px;">
+                            <div id="stackContainer" style="width: 160px; height: 90%; border: 4px solid rgba(255,255,255,0.05); border-top: none; border-radius: 0 0 20px 20px; background: rgba(99,102,241,0.02); display: flex; flex-direction: column-reverse; padding: 10px; gap: 8px; position: relative; box-shadow: inset 0 -20px 40px rgba(99,102,241,0.05);">
+                            </div>
+                        </div>
+
+                        <!-- Queue Visual (Conveyor) -->
+                        <div class="queue-visual" id="queueVisual" style="display:none; width: 100%; height: 100%; align-items: center; justify-content: center;">
+                            <div id="queueContainer" style="width: 90%; height: 100px; border-bottom: 4px solid rgba(255,255,255,0.1); display: flex; align-items: flex-end; padding-bottom: 10px; gap: 10px; overflow: hidden; background: linear-gradient(to right, rgba(0,0,0,0) 0%, rgba(99,102,241,0.05) 50%, rgba(0,0,0,0) 100%);">
+                            </div>
+                        </div>
+
+                        <!-- Linked List Visual (Chain) -->
+                        <div class="ll-visual" id="llVisual" style="display:none; width: 100%; height: 100%; align-items: center; justify-content: flex-start; padding: 0 40px; overflow-x: auto; gap: 0;">
+                        </div>
+<!-- Recursive Sort Visual -->
+                        <div class="recursive-sort-visual" id="recursiveSortVisual" style="display:none; position:relative; width:100%; height:100%; background:#fff; font-family:sans-serif;">
+                            <style>
+                                .rs-box { width:32px; height:32px; border:2px solid #000; display:flex; align-items:center; justify-content:center; font-weight:bold; color:#000; margin-left:-2px; background:#fff; }
+                                .rs-box:first-child { margin-left: 0; }
+                                .rs-array { position:absolute; display:flex; opacity: 0; transition: opacity 0.4s; z-index:2; }
+                                .rs-blue { background:#2563EB !important; color:#fff !important; }
+                                .rs-orange { background:#F59E0B !important; color:#fff !important; }
+                                .rs-arrow { stroke:#000; stroke-width:2; fill:none; }
+                                .rs-label { font-weight:bold; font-size:0.85rem; color:#000; }
+                            </style>
+                            <h3 style="position:absolute; top:10px; left:50%; transform:translateX(-50%); font-family:sans-serif; color:#2563EB; margin:0;">Quick Sort Algorithm</h3>
+                            
+                            <!-- SVG Lines -->
+                            <svg style="position:absolute; width:100%; height:100%; z-index:1;">
+                                <!-- L0 to L1 -->
+                                <line x1="50%" y1="15%" x2="30%" y2="35%" class="rs-arrow" id="qs-edge-0" style="opacity:0;"/>
+                                <line x1="50%" y1="15%" x2="70%" y2="35%" class="rs-arrow" id="qs-edge-1" style="opacity:0;"/>
+                                <!-- L1 to L2 Left -->
+                                <line x1="30%" y1="35%" x2="15%" y2="55%" class="rs-arrow" id="qs-edge-2" style="opacity:0;"/>
+                                <line x1="30%" y1="35%" x2="45%" y2="55%" class="rs-arrow" id="qs-edge-3" style="opacity:0;"/>
+                                <!-- L1 to L2 Right -->
+                                <line x1="70%" y1="35%" x2="55%" y2="55%" class="rs-arrow" id="qs-edge-4" style="opacity:0;"/>
+                                <line x1="70%" y1="35%" x2="85%" y2="55%" class="rs-arrow" id="qs-edge-5" style="opacity:0;"/>
+                                <!-- L2 LeftLeft to L3 -->
+                                <line x1="15%" y1="55%" x2="8%" y2="75%" class="rs-arrow" id="qs-edge-6" style="opacity:0;"/>
+                                <line x1="15%" y1="55%" x2="22%" y2="75%" class="rs-arrow" id="qs-edge-7" style="opacity:0;"/>
+                                <!-- L2 RightRight to L3 -->
+                                <line x1="85%" y1="55%" x2="78%" y2="75%" class="rs-arrow" id="qs-edge-8" style="opacity:0;"/>
+                                <line x1="85%" y1="55%" x2="92%" y2="75%" class="rs-arrow" id="qs-edge-9" style="opacity:0;"/>
+                                
+                                <text x="36%" y="26%" class="rs-label" id="qs-lbl-0" style="opacity:0;">&lt;=13</text>
+                                <text x="61%" y="26%" class="rs-label" id="qs-lbl-1" style="opacity:0;">&gt;=13</text>
+                            </svg>
+
+                            <!-- Level 0 -->
+                            <div class="rs-array" id="qs-arr-0" style="top:15%; left:50%; transform:translate(-50%, -50%);">
+                                <div class="rs-box rs-blue">19</div><div class="rs-box rs-blue">7</div><div class="rs-box rs-blue">15</div><div class="rs-box rs-blue">12</div><div class="rs-box rs-blue">16</div><div class="rs-box rs-blue">18</div><div class="rs-box rs-blue">4</div><div class="rs-box rs-blue">11</div><div class="rs-box rs-orange">13</div>
+                            </div>
+                            <div id="qs-arr-0-lbl" style="position:absolute; top:15%; left:65%; transform:translateY(-50%); font-weight:bold; font-size:0.9rem; opacity:0; display:flex; align-items:center; gap:5px;"><svg width="24" height="12"><line x1="0" y1="6" x2="20" y2="6" stroke="#000" stroke-width="2"/><polygon points="20,2 24,6 20,10" fill="#000"/></svg> Pivot</div>
+
+                            <!-- Level 1 -->
+                            <div class="rs-array" id="qs-arr-1" style="top:35%; left:25%; transform:translate(-50%, -50%);">
+                                <div class="rs-box rs-blue">7</div><div class="rs-box rs-blue">12</div><div class="rs-box rs-blue">4</div><div class="rs-box rs-orange">11</div>
+                            </div>
+                            <div class="rs-array" id="qs-arr-2" style="top:35%; left:50%; transform:translate(-50%, -50%);">
+                                <div class="rs-box rs-orange">13</div>
+                            </div>
+                            <div class="rs-array" id="qs-arr-3" style="top:35%; left:75%; transform:translate(-50%, -50%);">
+                                <div class="rs-box rs-blue">18</div><div class="rs-box rs-blue">15</div><div class="rs-box rs-blue">19</div><div class="rs-box rs-orange">16</div>
+                            </div>
+
+                            <!-- Level 2 -->
+                            <div class="rs-array" id="qs-arr-4" style="top:55%; left:12%; transform:translate(-50%, -50%);">
+                                <div class="rs-box rs-blue">7</div><div class="rs-box rs-orange">4</div>
+                            </div>
+                            <div class="rs-array" id="qs-arr-5" style="top:55%; left:28%; transform:translate(-50%, -50%);">
+                                <div class="rs-box rs-orange">11</div>
+                            </div>
+                            <div class="rs-array" id="qs-arr-6" style="top:55%; left:42%; transform:translate(-50%, -50%);">
+                                <div class="rs-box rs-blue">12</div>
+                            </div>
+                            <div class="rs-array" id="qs-arr-7" style="top:55%; left:58%; transform:translate(-50%, -50%);">
+                                <div class="rs-box rs-blue">15</div>
+                            </div>
+                            <div class="rs-array" id="qs-arr-8" style="top:55%; left:72%; transform:translate(-50%, -50%);">
+                                <div class="rs-box rs-orange">16</div>
+                            </div>
+                            <div class="rs-array" id="qs-arr-9" style="top:55%; left:88%; transform:translate(-50%, -50%);">
+                                <div class="rs-box rs-blue">19</div><div class="rs-box rs-orange">18</div>
+                            </div>
+
+                            <!-- Level 3 -->
+                            <div class="rs-array" id="qs-arr-10" style="top:75%; left:7%; transform:translate(-50%, -50%);">
+                                <div class="rs-box rs-orange">4</div>
+                            </div>
+                            <div class="rs-array" id="qs-arr-11" style="top:75%; left:17%; transform:translate(-50%, -50%);">
+                                <div class="rs-box rs-blue">7</div>
+                            </div>
+                            <div class="rs-array" id="qs-arr-12" style="top:75%; left:83%; transform:translate(-50%, -50%);">
+                                <div class="rs-box rs-orange">18</div>
+                            </div>
+                            <div class="rs-array" id="qs-arr-13" style="top:75%; left:93%; transform:translate(-50%, -50%);">
+                                <div class="rs-box rs-blue">19</div>
+                            </div>
+                        </div>
+<!-- Tree visual (Book style) -->
+                        <div class="tree-visual" id="treeVisual" style="display:none; position:relative; width:100%; height:100%; background:#fff;">
+                            <style>
+                                .lvl-label { position:absolute; left:20px; font-size:0.85rem; color:#111; font-family:serif; }
+                                .t-node { position:absolute; width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold; color:#111; z-index:2; transition: transform 0.3s, box-shadow 0.3s; }
+                                .t-node.internal { background: #56E2E8; } /* Cyan */
+                                .t-node.leaf { background: #7CDE60; } /* Green */
+                                .t-node.active { transform: scale(1.3); box-shadow: 0 0 20px rgba(0,0,0,0.3); border: 2px solid #111; }
+                                .t-legend { position:absolute; top:10px; right:20px; display:flex; flex-direction:column; gap:8px; font-family:serif; font-size:0.8rem; color:#111; }
+                                .t-leg-item { display:flex; align-items:center; gap:8px; }
+                                .t-leg-box { width:20px; height:20px; }
+                            </style>
+                            <h3 style="position:absolute; top:10px; left:50%; transform:translateX(-50%); font-family:sans-serif; color:#000; margin:0;">Perfect Binary Tree</h3>
+                            <div class="t-legend">
+                                <div class="t-leg-item"><div class="t-leg-box internal"></div> Internal Nodes</div>
+                                <div class="t-leg-item"><div class="t-leg-box leaf"></div> Leaf Nodes</div>
+                            </div>
+                            <div class="lvl-label" style="top:5%;">Level 0</div>
+                            <div class="lvl-label" style="top:25%;">Level 1</div>
+                            <div class="lvl-label" style="top:45%;">Level 2</div>
+                            <div class="lvl-label" style="top:65%;">Level 3</div>
+                            
+                            <svg style="position:absolute; width:100%; height:100%; z-index:1;">
+                                <line x1="50%" y1="5%" x2="35%" y2="25%" stroke="#111" stroke-width="2"/>
+                                <line x1="50%" y1="5%" x2="65%" y2="25%" stroke="#111" stroke-width="2"/>
+                                <line x1="35%" y1="25%" x2="25%" y2="45%" stroke="#111" stroke-width="2"/>
+                                <line x1="35%" y1="25%" x2="45%" y2="45%" stroke="#111" stroke-width="2"/>
+                                <line x1="65%" y1="25%" x2="55%" y2="45%" stroke="#111" stroke-width="2"/>
+                                <line x1="65%" y1="25%" x2="75%" y2="45%" stroke="#111" stroke-width="2"/>
+                                <line x1="25%" y1="45%" x2="18%" y2="65%" stroke="#111" stroke-width="2"/>
+                                <line x1="25%" y1="45%" x2="32%" y2="65%" stroke="#111" stroke-width="2"/>
+                                <line x1="45%" y1="45%" x2="38%" y2="65%" stroke="#111" stroke-width="2"/>
+                                <line x1="45%" y1="45%" x2="52%" y2="65%" stroke="#111" stroke-width="2"/>
+                                <line x1="55%" y1="45%" x2="48%" y2="65%" stroke="#111" stroke-width="2"/>
+                                <line x1="55%" y1="45%" x2="62%" y2="65%" stroke="#111" stroke-width="2"/>
+                                <line x1="75%" y1="45%" x2="68%" y2="65%" stroke="#111" stroke-width="2"/>
+                                <line x1="75%" y1="45%" x2="82%" y2="65%" stroke="#111" stroke-width="2"/>
+                            </svg>
+                            
+                            <div class="t-node internal" style="top:calc(5% - 20px); left:calc(50% - 20px);">1</div>
+                            <div class="t-node internal" style="top:calc(25% - 20px); left:calc(35% - 20px);">2</div>
+                            <div class="t-node internal" style="top:calc(25% - 20px); left:calc(65% - 20px);">3</div>
+                            <div class="t-node internal" style="top:calc(45% - 20px); left:calc(25% - 20px);">4</div>
+                            <div class="t-node internal" style="top:calc(45% - 20px); left:calc(45% - 20px);">5</div>
+                            <div class="t-node internal" style="top:calc(45% - 20px); left:calc(55% - 20px);">6</div>
+                            <div class="t-node internal" style="top:calc(45% - 20px); left:calc(75% - 20px);">7</div>
+                            <div class="t-node leaf" style="top:calc(65% - 20px); left:calc(18% - 20px);">8</div>
+                            <div class="t-node leaf" style="top:calc(65% - 20px); left:calc(32% - 20px);">9</div>
+                            <div class="t-node leaf" style="top:calc(65% - 20px); left:calc(38% - 20px);">10</div>
+                            <div class="t-node leaf" style="top:calc(65% - 20px); left:calc(52% - 20px);">11</div>
+                            <div class="t-node leaf" style="top:calc(65% - 20px); left:calc(48% - 20px);">12</div>
+                            <div class="t-node leaf" style="top:calc(65% - 20px); left:calc(62% - 20px);">13</div>
+                            <div class="t-node leaf" style="top:calc(65% - 20px); left:calc(68% - 20px);">14</div>
+                            <div class="t-node leaf" style="top:calc(65% - 20px); left:calc(82% - 20px);">15</div>
+                            
+                            <div id="treeOutputPanel" style="position:absolute; bottom:20px; left:50%; transform:translateX(-50%); background:#fff; border:2px solid #000; padding:10px; display:flex; flex-direction:column; align-items:center; z-index:10; font-family:sans-serif;">
+                                <div style="font-weight:bold; font-size:0.9rem; margin-bottom:5px;">In-Order Array</div>
+                                <div id="treeOutputArray" style="display:flex; gap:4px; font-size:0.9rem; font-weight:bold; min-height:24px;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Graph visual (Tree Structure for BFS/DFS/Dijkstra) -->
+                        <div class="graph-visual" id="graphVisual" style="display:none; position:relative;">
+                            <style>
+                                #graphVisual { background:#fff; width: 100%; height: 100%; }
+                                .edge-weight { position:absolute; transform:translate(-50%, -50%); font-size:0.8rem; font-weight:bold; background:#fff; padding:2px 4px; border-radius:4px; border:1px solid #000; z-index:1; color:#000; transition: all 0.3s; opacity: 0; }
+                                .show-weights .edge-weight { opacity: 1; }
+                                .node-cost { position:absolute; top:-20px; font-size:0.75rem; font-weight:bold; color:#d97706; background:#fff; padding:1px 6px; border-radius:10px; border:1px solid #000; opacity:0; transition:all 0.3s; }
+                                .show-costs .node-cost { opacity: 1; }
+                                #graphVisual .graph-node { background:#fff !important; border:2px solid #000 !important; color:#000 !important; font-family:sans-serif; }
+                                #graphVisual .graph-edge { stroke:#000 !important; }
+                            </style>
+                            <h3 style="position:absolute; top:10px; left:50%; transform:translateX(-50%); font-family:sans-serif; color:#000; margin:0;">Graph (Tree Layout)</h3>
+                            <svg style="position:absolute; width:100%; height:100%; z-index:0; pointer-events:none;">
+                                <!-- A-B --> <line x1="50%" y1="15%" x2="30%" y2="45%" stroke="var(--border-light)" stroke-width="2" class="graph-edge" id="edge-0-1" />
+                                <!-- A-C --> <line x1="50%" y1="15%" x2="70%" y2="45%" stroke="var(--border-light)" stroke-width="2" class="graph-edge" id="edge-0-2" />
+                                <!-- B-D --> <line x1="30%" y1="45%" x2="20%" y2="75%" stroke="var(--border-light)" stroke-width="2" class="graph-edge" id="edge-1-3" />
+                                <!-- B-E --> <line x1="30%" y1="45%" x2="50%" y2="75%" stroke="var(--border-light)" stroke-width="2" class="graph-edge" id="edge-1-4" />
+                                <!-- C-E --> <line x1="70%" y1="45%" x2="50%" y2="75%" stroke="var(--border-light)" stroke-width="2" class="graph-edge" id="edge-2-4" />
+                                <!-- C-F --> <line x1="70%" y1="45%" x2="80%" y2="75%" stroke="var(--border-light)" stroke-width="2" class="graph-edge" id="edge-2-5" />
+                            </svg>
+
+                            <div class="edge-weight" style="left:40%; top:30%;">4</div>
+                            <div class="edge-weight" style="left:60%; top:30%;">2</div>
+                            <div class="edge-weight" style="left:25%; top:60%;">5</div>
+                            <div class="edge-weight" style="left:40%; top:60%;">10</div>
+                            <div class="edge-weight" style="left:60%; top:60%;">3</div>
+                            <div class="edge-weight" style="left:75%; top:60%;">1</div>
+
+                            <div class="graph-node" id="gnode-0" style="top:calc(15% - 24px);left:calc(50% - 24px);z-index:2;">A<div class="node-cost">0</div></div>
+                            <div class="graph-node" id="gnode-1" style="top:calc(45% - 24px);left:calc(30% - 24px);z-index:2;">B<div class="node-cost">∞</div></div>
+                            <div class="graph-node" id="gnode-2" style="top:calc(45% - 24px);left:calc(70% - 24px);z-index:2;">C<div class="node-cost">∞</div></div>
+                            <div class="graph-node" id="gnode-3" style="top:calc(75% - 24px);left:calc(20% - 24px);z-index:2;">D<div class="node-cost">∞</div></div>
+                            <div class="graph-node" id="gnode-4" style="top:calc(75% - 24px);left:calc(50% - 24px);z-index:2;">E<div class="node-cost">∞</div></div>
+                            <div class="graph-node" id="gnode-5" style="top:calc(75% - 24px);left:calc(80% - 24px);z-index:2;">F<div class="node-cost">∞</div></div>
+
+                            <div id="graphStatePanel" style="position:absolute; right:20px; top:20px; width:120px; background:#fff; border:2px solid #000; padding:10px; display:none; z-index:10; font-family:sans-serif;">
+                                <div id="graphStateTitle" style="font-weight:bold; text-align:center; border-bottom:2px solid #000; margin-bottom:5px;">Queue</div>
+                                <div id="graphStateList" style="display:flex; flex-direction:column; gap:4px; font-size:0.85rem; text-align:center;"></div>
+                            </div>
+                            <div id="dijkstraTablePanel" style="position:absolute; right:20px; top:20px; width:160px; background:#fff; border:2px solid #000; padding:10px; display:none; z-index:10; font-family:sans-serif;">
+                                <div style="font-weight:bold; text-align:center; border-bottom:2px solid #000; margin-bottom:5px; font-size:0.9rem;">Distance Table</div>
+                                <table style="width:100%; border-collapse:collapse; font-size:0.8rem; text-align:center;">
+                                    <thead><tr style="border-bottom:1px solid #000;"><th>Node</th><th>Cost</th></tr></thead>
+                                    <tbody id="dijkstraTbody">
+                                        <tr><td>A</td><td id="dt-0">0</td></tr>
+                                        <tr><td>B</td><td id="dt-1">∞</td></tr>
+                                        <tr><td>C</td><td id="dt-2">∞</td></tr>
+                                        <tr><td>D</td><td id="dt-3">∞</td></tr>
+                                        <tr><td>E</td><td id="dt-4">∞</td></tr>
+                                        <tr><td>F</td><td id="dt-5">∞</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                            <!-- Fibonacci (hidden) -->
+                        <div class="fib-visual" id="fibVisual" style="display:none;">
+                            <div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:0.2rem;">Recursion Tree</div>
+                            <div class="fib-tree">
+                                <div class="fib-row"><span class="fib-node highlight">fib(6)</span></div>
+                                <div class="fib-row"><span class="fib-node">fib(5)</span><span class="fib-node">fib(4)</span></div>
+                                <div class="fib-row"><span class="fib-node">fib(4)</span><span class="fib-node">fib(3)</span><span class="fib-node">fib(3)</span><span class="fib-node">fib(2)</span></div>
+                                <div class="fib-row" style="gap:8px;">
+                                    <span class="fib-node" style="font-size:0.6rem;">...</span>
+                                    <span class="fib-node" style="font-size:0.6rem;">...</span>
+                                    <span class="fib-node" style="font-size:0.6rem;">...</span>
+                                    <span class="fib-node" style="font-size:0.6rem;">...</span>
+                                    <span class="fib-node" style="font-size:0.6rem;">...</span>
+                                    <span class="fib-node" style="font-size:0.6rem;">...</span>
+                                </div>
+                            </div>
+                            <div style="font-size:0.7rem;color:var(--text-muted);">Result: <span style="color:var(--text-primary);font-weight:600;">8</span></div>
+                        </div>
+
+                        <!-- Huffman (hidden) -->
+                        <div class="huffman-visual" id="huffmanVisual" style="display:none;">
+                            <div style="font-size:0.7rem;color:var(--text-muted);">Huffman Tree</div>
+                            <div style="display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;">
+                                <div style="display:flex;gap:20px;">
+                                    <span style="padding:4px 14px;border-radius:20px;background:rgba(99,102,241,0.06);border:1px solid rgba(99,102,241,0.08);font-size:0.7rem;">100</span>
+                                </div>
+                                <div style="display:flex;gap:40px;">
+                                    <span style="padding:4px 14px;border-radius:20px;background:rgba(99,102,241,0.04);border:1px solid rgba(99,102,241,0.04);font-size:0.65rem;">45</span>
+                                    <span style="padding:4px 14px;border-radius:20px;background:rgba(99,102,241,0.04);border:1px solid rgba(99,102,241,0.04);font-size:0.65rem;">55</span>
+                                </div>
+                                <div style="display:flex;gap:16px;flex-wrap:wrap;justify-content:center;">
+                                    <span style="padding:2px 12px;border-radius:14px;background:rgba(0,0,0,0.02);border:1px solid var(--border-light);font-size:0.6rem;">A: 0</span>
+                                    <span style="padding:2px 12px;border-radius:14px;background:rgba(0,0,0,0.02);border:1px solid var(--border-light);font-size:0.6rem;">B: 10</span>
+                                    <span style="padding:2px 12px;border-radius:14px;background:rgba(0,0,0,0.02);border:1px solid var(--border-light);font-size:0.6rem;">C: 110</span>
+                                    <span style="padding:2px 12px;border-radius:14px;background:rgba(0,0,0,0.02);border:1px solid var(--border-light);font-size:0.6rem;">D: 111</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- LIVE ITERATION BOX (corner) -->
+                <style>
+                    .live-iteration-box.dragging { transition: none !important; opacity: 0.95; }
+                    #dragHandle { cursor: grab; user-select: none; }
+                    #dragHandle:active { cursor: grabbing; }
+                    .algo-steps { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border-light); font-size: 0.65rem; }
+                    .algo-step { margin-bottom: 4px; padding: 4px 6px; border-radius: 4px; transition: all 0.2s ease; border-left: 3px solid transparent; }
+                    .active-step { background: rgba(99, 102, 241, 0.1); border-left-color: var(--accent-1) !important; color: var(--accent-1); font-weight: 600; }
+                </style>
+                <div class="live-iteration-box" id="liveIterationBox">
+                    <div class="box-title" id="dragHandle"><i class="fas fa-grip-lines fa-fw"></i> Live Iteration (Drag Me)</div>
+                    <div class="iteration-content" id="iterationContent">
+                        <div class="line"><span class="label">Step</span><span class="value" id="liveStep">0</span></div>
+                        <div class="line"><span class="label">Operation</span><span class="value highlight" id="liveOperation">—</span></div>
+                        <div class="line"><span class="label">Comparison</span><span class="value" id="liveCompare">0</span></div>
+                        <div class="line"><span class="label">Swap</span><span class="value" id="liveSwap">0</span></div>
+                        
+                        <div class="algo-steps" id="algoSteps">
+                            <!-- Populated by JS -->
+                        </div>
+                        <!-- Small binary tree for sorting/recursion/huffman -->
+                        <div class="corner-tree" id="cornerTree" style="display:none;">
+                            <div class="corner-row"><span class="corner-node">root</span></div>
+                            <div class="corner-row"><span class="corner-node">left</span><span class="corner-node">right</span></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </main>
+
+        <!-- RIGHT SIDEBAR -->
+        <aside class="sidebar-right">
+
+            <div>
+                <div class="panel-title"><i class="fas fa-sliders-h" style="margin-right:6px;"></i> Controls</div>
+            </div>
+
+            <div class="control-group">
+                <div class="control-label">Modify Data</div>
+                <div class="input-row">
+                    <input type="text" id="valueInput" placeholder="Value" value="42" />
+                    <button class="btn btn-primary" id="insertBtn"><i class="fas fa-plus"></i> Insert</button>
+                </div>
+                <div class="input-row">
+                    <input type="text" id="indexInput" placeholder="Index (optional)" />
+                    <button class="btn btn-danger" id="deleteBtn"><i class="fas fa-trash"></i> Delete</button>
+                </div>
+                <div class="input-row" style="margin-top:2px;">
+                    <button class="btn btn-secondary" id="resetBtn" style="flex:1;"><i class="fas fa-undo"></i> Reset</button>
+                    <button class="btn btn-secondary" id="randomBtn" style="flex:1;"><i class="fas fa-random"></i> Random</button>
+                </div>
+            </div>
+
+            <hr class="divider" />
+
+            <div class="control-group">
+                <div class="control-label">Playback</div>
+                <div class="controls-actions">
+                    <button class="btn-icon" id="playBtn"><i class="fas fa-play"></i></button>
+                    <button class="btn-icon" id="pauseBtn"><i class="fas fa-pause"></i></button>
+                    <button class="btn-icon" id="stepForwardBtn"><i class="fas fa-step-forward"></i></button>
+                    <button class="btn-icon" id="stepBackwardBtn"><i class="fas fa-step-backward"></i></button>
+                    <button class="btn-icon" id="speedBtn"><i class="fas fa-tachometer-alt"></i></button>
+                </div>
+                <div class="slider-control">
+                    <span style="font-size:0.6rem;color:var(--text-muted);">Slow</span>
+                    <input type="range" id="speedSlider" min="1" max="10" value="5" />
+                    <span style="font-size:0.6rem;color:var(--text-muted);">Fast</span>
+                    <span class="slider-value" id="speedValue">5</span>
+                </div>
+            </div>
+
+            <hr class="divider" />
+
+            <div>
+                <div class="panel-title" style="margin-bottom:8px;"><i class="fas fa-chart-simple" style="margin-right:6px;"></i> Stats</div>
+                <div class="stats-grid">
+                    <div class="stat-item"><div class="stat-label">Comparisons</div><div class="stat-value" id="statComparisons">0</div></div>
+                    <div class="stat-item"><div class="stat-label">Swaps</div><div class="stat-value" id="statSwaps">0</div></div>
+                    <div class="stat-item"><div class="stat-label">Time</div><div class="stat-value" id="statTime">0.00 ms</div></div>
+                    <div class="stat-item"><div class="stat-label">Memory</div><div class="stat-value" id="statMemory">0 KB</div></div>
+                </div>
+            </div>
+
+            <hr class="divider" />
+
+            <div style="font-size:0.7rem;color:var(--text-muted);line-height:1.5;">
+                <div style="display:flex;justify-content:space-between;"><span>Algorithm</span><span style="color:var(--text-secondary);font-weight:500;" id="algoInfoName">Stack</span></div>
+                <div style="display:flex;justify-content:space-between;margin-top:2px;"><span>Complexity</span><span style="color:var(--text-secondary);font-weight:500;" id="algoInfoComplexity">O(1)</span></div>
+                <div style="display:flex;justify-content:space-between;margin-top:2px;"><span>Category</span><span style="color:var(--text-secondary);font-weight:500;" id="algoInfoCategory">Array</span></div>
+            </div>
+
+        </aside>
+
+    </div>
+
+    <script>
+        (function() {
+            'use strict';
+
+            // DOM refs
+            const algoItems = document.querySelectorAll('.algo-item');
+            const currentAlgoName = document.getElementById('currentAlgoName');
+            const currentAlgoCategory = document.getElementById('currentAlgoCategory');
+            const dataSize = document.getElementById('dataSize');
+            const stepCount = document.getElementById('stepCount');
+            const timeComplexity = document.getElementById('timeComplexity');
+            const statComparisons = document.getElementById('statComparisons');
+            const statSwaps = document.getElementById('statSwaps');
+            const statTime = document.getElementById('statTime');
+            const statMemory = document.getElementById('statMemory');
+            const algoInfoName = document.getElementById('algoInfoName');
+            const algoInfoComplexity = document.getElementById('algoInfoComplexity');
+            const algoInfoCategory = document.getElementById('algoInfoCategory');
+
+            // Live iteration box elements
+            const liveStep = document.getElementById('liveStep');
+            const liveOperation = document.getElementById('liveOperation');
+            const liveCompare = document.getElementById('liveCompare');
+            const liveSwap = document.getElementById('liveSwap');
+            const cornerTree = document.getElementById('cornerTree');
+
+            // Visual containers
+            const arrayVisual = document.getElementById('arrayVisual');
+            const treeVisual = document.getElementById('treeVisual');
+            const graphVisual = document.getElementById('graphVisual');
+            const fibVisual = document.getElementById('fibVisual');
+            const huffmanVisual = document.getElementById('huffmanVisual');
+
+            // Controls
+            const valueInput = document.getElementById('valueInput');
+            const indexInput = document.getElementById('indexInput');
+            const insertBtn = document.getElementById('insertBtn');
+            const deleteBtn = document.getElementById('deleteBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            const randomBtn = document.getElementById('randomBtn');
+            const playBtn = document.getElementById('playBtn');
+            const pauseBtn = document.getElementById('pauseBtn');
+            const stepForwardBtn = document.getElementById('stepForwardBtn');
+            const stepBackwardBtn = document.getElementById('stepBackwardBtn');
+            const speedBtn = document.getElementById('speedBtn');
+            const speedSlider = document.getElementById('speedSlider');
+            const speedValue = document.getElementById('speedValue');
+
+            // State
+            let currentAlgo = 'stack';
+            let stepCounter = 0;
+            let isPlaying = false;
+            let playInterval = null;
+            let bubbleI = 0;
+            let bubbleJ = 0;
+            let llIndex = 0;
+            let treeIndex = 0;
+            let graphIndex = 0;
+            const inOrderSeq = [3, 1, 4, 0, 5, 2, 6];
+            const bfsSeq = [0, 1, 5, 3, 2, 4];
+            const bfsEdgeTriggers = [[], [0], [2], [1], [3, 5], [4, 6]];
+            
+            const algoStepsDict = {
+                stack: ["1. Check if stack is empty/full", "2. If pushing, add element to top", "3. If popping, remove element from top"],
+                queue: ["1. Check if queue is empty/full", "2. If enqueueing, add to back", "3. If dequeueing, remove from front"],
+                linkedlist: ["1. Start at head node", "2. Check if current node is target", "3. If not, move to next node"],
+                binarytree: ["1. Traverse left subtree", "2. Visit root node", "3. Traverse right subtree"],
+                bfs: ["1. Start at root, enqueue it", "2. Dequeue node, visit it", "3. Enqueue all unvisited neighbors"],
+                dfs: ["1. Start at root, push to stack", "2. Pop node, visit it", "3. Push all unvisited neighbors", "4. Backtrack when stuck"],
+                dijkstra: ["1. Set all costs to ∞, start=0", "2. Pick lowest cost node", "3. Update neighbor costs", "4. Mark node as visited"],
+                bubble: ["1. Compare adjacent elements", "2. Swap if left > right", "3. Move to next pair"]
+            };
+
+            function highlightStep(stepIdx) {
+                const steps = document.querySelectorAll('.algo-step');
+                steps.forEach((el, i) => {
+                    if (i === stepIdx) el.classList.add('active-step');
+                    else el.classList.remove('active-step');
+                });
+            }
+
+            // Educational Data & Metadata
+            const eduData = {
+                stack: { title: "Stack", desc: "A linear data structure that follows the Last-In-First-Out (LIFO) principle. Elements are added and removed from the same end, called the 'top'.", uses: ["Browser Back/Forward History", "Undo mechanisms in text editors", "Function call tracking (Call Stack)"], comp: [["Insert", "O(1)", "O(1)"], ["Delete", "O(1)", "O(1)"], ["Search", "O(n)", "O(n)"]] },
+                queue: { title: "Queue", desc: "A linear structure following First-In-First-Out (FIFO). Elements enter at the rear and leave from the front.", uses: ["Printer job scheduling", "CPU task scheduling", "Breadth-First Search buffers"], comp: [["Enqueue", "O(1)", "O(1)"], ["Dequeue", "O(1)", "O(1)"], ["Search", "O(n)", "O(n)"]] },
+                linkedlist: { title: "Linked List", desc: "A linear sequence where each element (node) stores data and a pointer to the next node. Memory is not contiguous.", uses: ["Dynamic memory allocation", "Implementing Stacks/Queues", "Hash table chaining"], comp: [["Insert", "O(1)", "O(1)"], ["Delete", "O(1)", "O(1)"], ["Search", "O(n)", "O(n)"]] },
+                quicksort: { title: "Quick / Merge Sort", desc: "Divide and conquer algorithms that recursively break an array into smaller sub-arrays and sort them.", uses: ["Built-in Array.sort() in most languages", "Large dataset sorting"], comp: [["Time", "O(n log n)", "O(n²)"], ["Space", "O(log n)", "O(n)"]] },
+                bubble: { title: "Bubble Sort", desc: "A simple sorting algorithm that repeatedly steps through the list, compares adjacent elements and swaps them if they are in the wrong order.", uses: ["Educational purposes (rarely used in real life due to inefficiency)", "Finding small errors in nearly sorted data"], comp: [["Time", "O(n²)", "O(n²)"], ["Space", "O(1)", "O(1)"]] },
+                binarytree: { title: "Binary Tree", desc: "A hierarchical structure where each node has at most two children (left and right). Used heavily for quick lookups.", uses: ["Database indices (B-Trees)", "Decision engines", "Expression parsers"], comp: [["Search", "O(log n)", "O(n)"], ["Insert", "O(log n)", "O(n)"]] },
+                bfs: { title: "Breadth-First Search", desc: "An algorithm for searching a graph. It explores all neighbors at the present depth prior to moving on to the nodes at the next depth level.", uses: ["Finding shortest path on unweighted graphs", "GPS Navigation", "Social network peer discovery"], comp: [["Time", "O(V + E)", "O(V + E)"], ["Space", "O(V)", "O(V)"]] },
+                dfs: { title: "Depth-First Search", desc: "Explores as far as possible along each branch before backtracking.", uses: ["Solving mazes", "Topological sorting", "Finding connected components"], comp: [["Time", "O(V + E)", "O(V + E)"], ["Space", "O(V)", "O(V)"]] },
+                dijkstra: { title: "Dijkstra's Algorithm", desc: "Finds the shortest paths between nodes in a graph, which may represent, for example, road networks.", uses: ["Google Maps routing", "Network routing protocols (OSPF)"], comp: [["Time", "O(E + V log V)", "O(E log V)"], ["Space", "O(V)", "O(V)"]] }
+            };
+
+            const algoMeta = {
+                stack: { name: 'Stack', category: 'CSE 225', complexity: 'O(1) push/pop', tree: false },
+                queue: { name: 'Queue', category: 'CSE 225', complexity: 'O(1) enqueue/dequeue', tree: false },
+                linkedlist: { name: 'Linked List', category: 'CSE 225', complexity: 'O(n) search', tree: false },
+                binarytree: { name: 'Binary Tree', category: 'CSE 225', complexity: 'O(log n)', tree: true },
+                bfs: { name: 'BFS/DFS Graph Search', category: 'CSE 225', complexity: 'O(V+E)', tree: false },
+                dijkstra: { name: 'Dijkstra Path', category: 'CSE 225', complexity: 'O(E log V)', tree: false },
+                bubble: { name: 'Sorting Algos', category: 'CSE 225', complexity: 'O(n log n)', tree: true },
+                btree: { name: 'B+ Tree Indexing', category: 'CSE 311', complexity: 'O(log n)', tree: true },
+                relational: { name: 'Relational Algebra', category: 'CSE 311', complexity: 'O(n*m)', tree: false },
+                fibonacci: { name: 'Fibonacci Recursion', category: 'CSE 173', complexity: 'O(2ⁿ)', tree: true },
+                matrix: { name: 'Matrix Operations', category: 'MAT 125', complexity: 'O(n³)', tree: false }
+            };
+
+            // Helpers
+            function hideAllVisuals() {
+                arrayVisual.style.display = 'none';
+                treeVisual.style.display = 'none';
+                graphVisual.style.display = 'none';
+                fibVisual.style.display = 'none';
+                huffmanVisual.style.display = 'none';
+                const sv = document.getElementById('stackVisual'); if (sv) sv.style.display = 'none';
+                const qv = document.getElementById('queueVisual'); if (qv) qv.style.display = 'none';
+                const lv = document.getElementById('llVisual'); if (lv) lv.style.display = 'none';
+                const rsv = document.getElementById('recursiveSortVisual'); if (rsv) rsv.style.display = 'none';
+            }
+
+            function showVisual(type) {
+                hideAllVisuals();
+
+                if (document.getElementById('graphStatePanel')) document.getElementById('graphStatePanel').style.display = 'none';
+                if (document.getElementById('dijkstraTablePanel')) document.getElementById('dijkstraTablePanel').style.display = 'none';
+                if (document.getElementById('treeOutputArray')) document.getElementById('treeOutputArray').innerHTML = '';
+
+                if (type === 'array') arrayVisual.style.display = 'flex';
+                else if (type === 'tree') treeVisual.style.display = 'flex';
+                else if (type === 'graph') graphVisual.style.display = 'flex';
+                else if (type === 'fib') fibVisual.style.display = 'flex';
+                else if (type === 'huffman') huffmanVisual.style.display = 'flex';
+                else if (type === 'stack') document.getElementById('stackVisual').style.display = 'flex';
+                else if (type === 'queue') document.getElementById('queueVisual').style.display = 'flex';
+                else if (type === 'linkedlist') document.getElementById('llVisual').style.display = 'flex';
+                else if (type === 'quicksort') document.getElementById('recursiveSortVisual').style.display = 'flex';
+            }
+
+            function updateLiveIteration(step, op, comp, swap, showTree = false) {
+                liveStep.textContent = step;
+                liveOperation.textContent = op;
+                liveCompare.textContent = comp;
+                liveSwap.textContent = swap;
+                if (showTree) {
+                    cornerTree.style.display = 'flex';
+                } else {
+                    cornerTree.style.display = 'none';
+                }
+            }
+
+            function updateUI(algoKey) {
+                const meta = algoMeta[algoKey] || algoMeta.stack;
+                currentAlgoName.textContent = meta.name;
+                currentAlgoCategory.textContent = meta.category;
+                algoInfoName.textContent = meta.name;
+                algoInfoComplexity.textContent = meta.complexity;
+                algoInfoCategory.textContent = meta.category;
+                timeComplexity.textContent = meta.complexity;
+
+                // Update data size
+                const bars = arrayVisual.querySelectorAll('.array-bar');
+                dataSize.textContent = bars.length || 8;
+
+                // Increment step
+                stepCounter += 1;
+                stepCount.textContent = stepCounter;
+
+                // Update stats (simulated)
+                const comps = Math.floor(Math.random() * 20 + 5);
+                const swaps = Math.floor(Math.random() * 10 + 2);
+                statComparisons.textContent = comps;
+                statSwaps.textContent = swaps;
+                statTime.textContent = (Math.random() * 0.8 + 0.1).toFixed(2) + ' ms';
+                statMemory.textContent = (Math.random() * 4 + 1).toFixed(1) + ' KB';
+
+                // Live iteration box
+                const operations = ['Comparing', 'Swapping', 'Inserting', 'Deleting', 'Merging', 'Partitioning', 'Visiting', 'Extracting'];
+                const op = operations[Math.floor(Math.random() * operations.length)] + '...';
+                updateLiveIteration(stepCounter, op, comps, swaps, meta.tree);
+
+                // Show tree in corner if algorithm supports tree
+                if (meta.tree) {
+                    cornerTree.style.display = 'flex';
+                } else {
+                    cornerTree.style.display = 'none';
+                }
+            }
+
+            function switchAlgorithm(algoKey) {
+                // Active state
+                algoItems.forEach(el => el.classList.remove('active'));
+                const target = document.querySelector(`.algo-item[data-algo="${algoKey}"]`);
+                if (target) target.classList.add('active');
+
+                currentAlgo = algoKey;
+                stepCounter = 0;
+
+                const meta = algoMeta[algoKey] || algoMeta.stack;
+                const category = meta.category;
+
+                // Show Educational Dashboard
+                const eData = eduData[algoKey] || { title: meta.name || algoKey, desc: "No description available.", uses: [], comp: [] };
+                const eduPanel = document.getElementById('eduPanel');
+                if (eduPanel) {
+                    eduPanel.style.display = 'none';
+                    document.getElementById('eduTitle').innerHTML = `<i class="fas fa-book-open" style="color: var(--accent-1);"></i> ${eData.title}`;
+                    document.getElementById('eduDesc').textContent = eData.desc;
+                    document.getElementById('eduUses').innerHTML = eData.uses.map(u => `<li>${u}</li>`).join('');
+                    document.getElementById('eduComplexity').innerHTML = eData.comp.map(c => `<tr><td style="padding: 6px 4px;">${c[0]}</td><td style="padding: 6px 4px; font-family: monospace;">${c[1]}</td><td style="padding: 6px 4px; font-family: monospace;">${c[2]}</td></tr>`).join('');
+                }
+
+                // Show main visual
+                if (['bubble', 'matrix', 'relational'].includes(algoKey)) {
+                    showVisual('array');
+                    // randomize bars
+                    const bars = arrayVisual.querySelectorAll('.array-bar');
+                    bars.forEach((bar, i) => {
+                        const h = Math.floor(Math.random() * 70 + 20);
+                        bar.style.height = h + '%';
+                        const val = Math.floor(Math.random() * 40 + 5);
+                        bar.setAttribute('data-value', val);
+                        const label = bar.querySelector('.bar-label');
+                        if (label) label.textContent = val;
+                    });
+                    dataSize.textContent = bars.length;
+                } else if (algoKey === 'stack') {
+                    showVisual('stack');
+                    dataSize.textContent = document.getElementById('stackContainer').children.length;
+                } else if (algoKey === 'queue') {
+                    showVisual('queue');
+                    dataSize.textContent = document.getElementById('queueContainer').children.length;
+                } else if (algoKey === 'quicksort') {
+                    showVisual('quicksort');
+                    document.getElementById('rsCanvas').innerHTML = '';
+                    document.getElementById('rsSvg').innerHTML = '';
+                    dataSize.textContent = '8';
+                } else if (algoKey === 'linkedlist') {
+                    showVisual('linkedlist');
+                    const llContainer = document.getElementById('llVisual');
+                    llContainer.innerHTML = ''; // reset
+                    for (let i = 0; i < 5; i++) {
+                        const val = Math.floor(Math.random() * 90 + 10);
+                        llContainer.innerHTML += `<div class="ll-node" data-value="${val}" style="display:flex;align-items:center;background:var(--bg-surface);border:1px solid var(--border-light);border-radius:8px;padding:10px 15px;box-shadow:0 4px 12px rgba(0,0,0,0.2);position:relative;color:var(--text-primary);font-weight:600;min-width:60px;justify-content:center;transition:all 0.3s ease;">${val}</div>`;
+                        if (i < 4) llContainer.innerHTML += `<div class="ll-arrow" style="width:40px;height:2px;background:var(--border-light);position:relative;"></div>`;
+                    }
+                    dataSize.textContent = '5';
+                } else if (['binarytree', 'btree'].includes(algoKey)) {
+                    showVisual('tree');
+                    dataSize.textContent = '7';
+                } else if (['bfs', 'dfs', 'dijkstra', 'prim', 'kruskal'].includes(algoKey)) {
+                    const gv = document.getElementById('graphVisual');
+                    if(algoKey === 'dijkstra') { gv.classList.add('show-weights', 'show-costs'); }
+                    else { gv.classList.remove('show-weights', 'show-costs'); }
+                    showVisual('graph');
+                    dataSize.textContent = '6';
+                } else if (algoKey === 'fibonacci') {
+                    showVisual('fib');
+                    dataSize.textContent = '6';
+                } else if (algoKey === 'huffman') {
+                    showVisual('huffman');
+                    dataSize.textContent = '4';
+                }
+
+                // Update UI
+                updateUI(algoKey);
+                
+                const stepsContainer = document.getElementById('algoSteps');
+                if (stepsContainer) {
+                    stepsContainer.innerHTML = '';
+                    const steps = algoStepsDict[algoKey] || ["1. Execute logic"];
+                    steps.forEach((stepText, idx) => {
+                        const stepEl = document.createElement('div');
+                        stepEl.className = 'algo-step';
+                        stepEl.id = 'step-' + idx;
+                        stepEl.textContent = stepText;
+                        stepsContainer.appendChild(stepEl);
+                    });
+                }
+
+                // Reset live iteration box
+                updateLiveIteration(0, 'Ready', 0, 0, meta.tree);
+                highlightStep(-1);
+
+                // Stop any playing
+                if (isPlaying) {
+                    clearInterval(playInterval);
+                    isPlaying = false;
+                    playBtn.innerHTML = '<i class="fas fa-play"></i>';
+                }
+            }
+
+            // --- Event listeners ---
+            algoItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const algo = this.dataset.algo;
+                    if (algo) switchAlgorithm(algo);
+                });
+            });
+
+            // Insert
+            insertBtn.addEventListener('click', function() {
+                const val = valueInput.value.trim() || '42';
+                const bars = arrayVisual.querySelectorAll('.array-bar');
+                if (bars.length < 16) {
+                    const container = arrayVisual;
+                    const newBar = document.createElement('div');
+                    const h = Math.floor(Math.random() * 70 + 20);
+                    newBar.className = 'array-bar';
+                    newBar.style.height = h + '%';
+                    newBar.setAttribute('data-value', val);
+                    newBar.innerHTML = `<span class="bar-index">${bars.length}</span><span class="bar-label">${val}</span>`;
+                    const pos = Math.floor(Math.random() * (bars.length + 1));
+                    if (pos < bars.length) {
+                        container.insertBefore(newBar, bars[pos]);
+                    } else {
+                        container.appendChild(newBar);
+                    }
+                    const allBars = container.querySelectorAll('.array-bar');
+                    allBars.forEach((b, idx) => {
+                        const idxEl = b.querySelector('.bar-index');
+                        if (idxEl) idxEl.textContent = idx;
+                    });
+                    dataSize.textContent = allBars.length;
+                    updateUI(currentAlgo);
+                    // Update live box
+                    updateLiveIteration(stepCounter, 'Inserted ' + val, statComparisons.textContent, statSwaps.textContent, algoMeta[currentAlgo]?.tree || false);
+                } else {
+                    insertBtn.style.transform = 'scale(0.95)';
+                    setTimeout(() => insertBtn.style.transform = '', 200);
+                }
+            });
+
+            // Delete
+            deleteBtn.addEventListener('click', function() {
+                const index = indexInput.value.trim();
+                const bars = arrayVisual.querySelectorAll('.array-bar');
+                if (bars.length > 2) {
+                    let idx = parseInt(index);
+                    if (isNaN(idx) || idx < 0 || idx >= bars.length) idx = bars.length - 1;
+                    bars[idx].style.transition = 'all 0.2s';
+                    bars[idx].style.opacity = '0';
+                    bars[idx].style.transform = 'scale(0.5)';
+                    setTimeout(() => {
+                        bars[idx].remove();
+                        const allBars = arrayVisual.querySelectorAll('.array-bar');
+                        allBars.forEach((b, i) => {
+                            const idxEl = b.querySelector('.bar-index');
+                            if (idxEl) idxEl.textContent = i;
+                        });
+                        dataSize.textContent = allBars.length;
+                        updateUI(currentAlgo);
+                        updateLiveIteration(stepCounter, 'Deleted index ' + idx, statComparisons.textContent, statSwaps.textContent, algoMeta[currentAlgo]?.tree || false);
+                    }, 250);
+                } else {
+                    deleteBtn.style.transform = 'scale(0.95)';
+                    setTimeout(() => deleteBtn.style.transform = '', 200);
+                }
+                indexInput.value = '';
+            });
+
+            // Reset
+            resetBtn.addEventListener('click', function() {
+                const container = arrayVisual;
+                container.innerHTML = '';
+                const defaultValues = [5, 8, 3, 12, 7, 18, 9, 14];
+                defaultValues.forEach((val, i) => {
+                    const bar = document.createElement('div');
+                    const h = (val / 20) * 100;
+                    bar.className = 'array-bar';
+                    bar.style.height = Math.min(h, 90) + '%';
+                    bar.setAttribute('data-value', val);
+                    bar.innerHTML = `<span class="bar-index">${i}</span><span class="bar-label">${val}</span>`;
+                    container.appendChild(bar);
+                });
+                dataSize.textContent = defaultValues.length;
+                stepCounter = 0;
+                stepCount.textContent = '0';
+                statComparisons.textContent = '0';
+                statSwaps.textContent = '0';
+                statTime.textContent = '0.00 ms';
+                statMemory.textContent = '0 KB';
+                updateLiveIteration(0, 'Reset', 0, 0, algoMeta[currentAlgo]?.tree || false);
+                updateUI(currentAlgo);
+            });
+
+            // Random
+            randomBtn.addEventListener('click', function() {
+                const container = arrayVisual;
+                container.innerHTML = '';
+                const count = Math.floor(Math.random() * 6 + 6);
+                for (let i = 0; i < count; i++) {
+                    const val = Math.floor(Math.random() * 35 + 5);
+                    const bar = document.createElement('div');
+                    const h = (val / 40) * 100;
+                    bar.className = 'array-bar';
+                    bar.style.height = Math.min(h, 90) + '%';
+                    bar.setAttribute('data-value', val);
+                    bar.innerHTML = `<span class="bar-index">${i}</span><span class="bar-label">${val}</span>`;
+                    container.appendChild(bar);
+                }
+                dataSize.textContent = count;
+                stepCounter = 0;
+                stepCount.textContent = '0';
+                updateLiveIteration(0, 'Randomized', 0, 0, algoMeta[currentAlgo]?.tree || false);
+                updateUI(currentAlgo);
+            });
+
+            // Playback
+            function startPlay() {
+                if (isPlaying) return;
+                isPlaying = true;
+                playBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                const speed = parseInt(speedSlider.value) || 5;
+                const interval = Math.max(200, 1200 - speed * 100);
+                
+                if (stepCounter === 0) {
+                    if (currentAlgo === 'bubble') { bubbleI = 0; bubbleJ = 0; }
+                    llIndex = 0; treeIndex = 0; graphIndex = 0;
+                    
+                    const edges = document.querySelectorAll('.graph-edge');
+                    edges.forEach(e => { e.style.stroke = 'var(--border-light)'; e.style.strokeWidth = '2'; });
+                    const nodes = document.querySelectorAll('.graph-node, .tree-node');
+                    nodes.forEach(n => { n.style.transform = ''; n.style.boxShadow = ''; n.style.background = ''; n.style.color = ''; });
+                    const bars = document.querySelectorAll('.array-bar');
+                    bars.forEach(b => { b.style.filter = ''; });
+                }
+
+                playInterval = setInterval(() => {
+                    if (currentAlgo === 'bubble') {
+                        const bars = Array.from(arrayVisual.querySelectorAll('.array-bar'));
+                        if (bars.length === 0) return;
+                        bars.forEach(b => { b.style.filter = ''; b.style.opacity = '1'; b.style.boxShadow = ''; b.style.transform = 'scale(1)'; });
+                        if (bubbleI < bars.length - 1) {
+                            if (bubbleJ < bars.length - bubbleI - 1) {
+                                const val1 = parseInt(bars[bubbleJ].getAttribute('data-value'));
+                                const val2 = parseInt(bars[bubbleJ+1].getAttribute('data-value'));
+                                bars[bubbleJ].style.filter = 'brightness(1.5)';
+                                bars[bubbleJ+1].style.filter = 'brightness(1.5)';
+                                updateLiveIteration(stepCounter++, 'Comparing', val1 + ' & ' + val2, '0', false);
+                                highlightStep(0);
+                                if (val1 > val2) {
+                                    const h1 = bars[bubbleJ].style.height;
+                                    bars[bubbleJ].style.height = bars[bubbleJ+1].style.height;
+                                    bars[bubbleJ+1].style.height = h1;
+                                    bars[bubbleJ].setAttribute('data-value', val2);
+                                    bars[bubbleJ].querySelector('.bar-label').textContent = val2;
+                                    bars[bubbleJ+1].setAttribute('data-value', val1);
+                                    bars[bubbleJ+1].querySelector('.bar-label').textContent = val1;
+                                    updateLiveIteration(stepCounter, 'Swapped', val1 + ' > ' + val2, '1', false);
+                                    highlightStep(1);
+                                }
+                                bubbleJ++;
+                            } else {
+                                bubbleI++;
+                                bubbleJ = 0;
+                                highlightStep(2);
+                            }
+                        } else {
+                            stopPlay();
+                            updateLiveIteration(stepCounter, 'Sorted!', '0', '0', false);
+                            highlightStep(-1);
+                        }
+                    } else if (currentAlgo === 'stack') {
+                        const sCont = document.getElementById('stackContainer');
+                        const items = sCont.children;
+                        highlightStep(0);
+                        if (items.length > 0 && (Math.random() > 0.4 || items.length > 6)) {
+                            const last = items[items.length - 1];
+                            const val = last.getAttribute('data-value');
+                            last.remove();
+                            updateLiveIteration(stepCounter++, 'Pop', 'Removed ' + val, '-', false);
+                            highlightStep(2);
+                        } else {
+                            const val = Math.floor(Math.random() * 40 + 5);
+                            const newItem = document.createElement('div');
+                            newItem.setAttribute('data-value', val);
+                            newItem.style.cssText = 'width: 100%; height: 36px; background: rgba(99,102,241,0.2); border: 1px solid var(--accent-1); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: var(--accent-1); font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: all 0.3s;';
+                            newItem.textContent = val;
+                            sCont.appendChild(newItem);
+                            updateLiveIteration(stepCounter++, 'Push', 'Added ' + val, '-', false);
+                            highlightStep(1);
+                        }
+                        document.getElementById('dataSize').textContent = sCont.children.length;
+                        if (items.length === 0 && Math.random() > 0.8) stopPlay();
+                    } else if (currentAlgo === 'queue') {
+                        const qCont = document.getElementById('queueContainer');
+                        const items = qCont.children;
+                        highlightStep(0);
+                        if (items.length > 0 && (Math.random() > 0.4 || items.length > 7)) {
+                            const first = items[0];
+                            const val = first.getAttribute('data-value');
+                            first.remove();
+                            updateLiveIteration(stepCounter++, 'Dequeue', 'Removed ' + val, '-', false);
+                            highlightStep(2);
+                        } else {
+                            const val = Math.floor(Math.random() * 40 + 5);
+                            const newItem = document.createElement('div');
+                            newItem.setAttribute('data-value', val);
+                            newItem.style.cssText = 'min-width: 45px; height: 45px; background: rgba(56,239,125,0.2); border: 1px solid var(--accent-5); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--accent-5); font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: all 0.3s;';
+                            newItem.textContent = val;
+                            qCont.appendChild(newItem);
+                            updateLiveIteration(stepCounter++, 'Enqueue', 'Added ' + val, '-', false);
+                            highlightStep(1);
+                        }
+                        document.getElementById('dataSize').textContent = qCont.children.length;
+                    } else if (currentAlgo === 'linkedlist') {
+                        const llCont = document.getElementById('llVisual');
+                        const nodes = Array.from(llCont.querySelectorAll('.ll-node'));
+                        const arrows = Array.from(llCont.querySelectorAll('.ll-arrow'));
+                        if (nodes.length === 0) return;
+                        
+                        nodes.forEach(n => { n.style.background = 'var(--bg-surface)'; n.style.color = 'var(--text-primary)'; n.style.borderColor = 'var(--border-light)'; });
+                        arrows.forEach(a => a.style.background = 'var(--border-light)');
+                        
+                        if (llIndex < nodes.length) {
+                            for(let i=0; i<=llIndex; i++) {
+                                nodes[i].style.borderColor = 'var(--accent-1)';
+                                if(arrows[i]) arrows[i].style.background = 'var(--accent-1)';
+                            }
+                            nodes[llIndex].style.background = 'var(--gradient-main)';
+                            nodes[llIndex].style.color = '#fff';
+                            nodes[llIndex].style.boxShadow = '0 0 15px var(--accent-1)';
+                            
+                            const val = nodes[llIndex].getAttribute('data-value');
+                            updateLiveIteration(stepCounter++, 'Linear Search', 'Checking Node = ' + val, '-', false);
+                            highlightStep(1);
+                            llIndex++;
+                        } else {
+                            stopPlay();
+                            updateLiveIteration(stepCounter, 'Search Complete', '-', '-', false);
+                            highlightStep(-1);
+                        }
+                    } else if (currentAlgo === 'binarytree' || currentAlgo === 'btree') {
+                        const nodes = treeVisual.querySelectorAll('.t-node');
+                        nodes.forEach(n => { n.classList.remove('active'); });
+                        
+                        // Academic Textbook In-Order (Left, Root, Right)
+                        const inOrderBook = [7, 3, 8, 1, 9, 4, 10, 0, 11, 5, 12, 2, 13, 6, 14];
+                        
+                        if (treeIndex < inOrderBook.length) {
+                            const idx = inOrderBook[treeIndex];
+                            nodes[idx].classList.add('active');
+                            const val = nodes[idx].textContent;
+                            document.getElementById('treeOutputArray').innerHTML += `<div style="width:24px; height:24px; display:flex; align-items:center; justify-content:center; border:1px solid #000; background:#f0f0f0;">${val}</div>`;
+                            updateLiveIteration(stepCounter++, 'In-Order Traversal', 'Node: ' + val, '-', true);
+                            highlightStep(1);
+                            treeIndex++;
+                        } else {
+                            stopPlay();
+                            updateLiveIteration(stepCounter, 'Traversal Complete', '-', '-', true);
+                            highlightStep(-1);
+                        }
+                                        } else if (currentAlgo === 'quicksort') {
+                        const canvas = document.getElementById('rsCanvas');
+                        const svg = document.getElementById('rsSvg');
+                        
+                        // Detailed pointer scanning sequence for textbook clarity
+                        const revealSequence = [
+                            ['qs-arr-0', 'qs-arr-0-lbl'],
+                            ['qs-edge-0', 'qs-edge-1', 'qs-lbl-0', 'qs-lbl-1'],
+                            ['qs-arr-1', 'qs-arr-2', 'qs-arr-3'],
+                            ['qs-edge-2', 'qs-edge-3', 'qs-edge-4', 'qs-edge-5'],
+                            ['qs-arr-4', 'qs-arr-5', 'qs-arr-6', 'qs-arr-7', 'qs-arr-8', 'qs-arr-9'],
+                            ['qs-edge-6', 'qs-edge-7', 'qs-edge-8', 'qs-edge-9'],
+                            ['qs-arr-10', 'qs-arr-11', 'qs-arr-12', 'qs-arr-13']
+                        ];
+                        
+                        if (stepCounter < revealSequence.length) {
+                            revealSequence[stepCounter].forEach(id => {
+                                const el = document.getElementById(id);
+                                if (el) el.style.opacity = '1';
+                            });
+                            updateLiveIteration(stepCounter, 'Divide & Conquer', 'Splitting Array around Pivot', '-', false);
+                            stepCounter++;
+                        } else {
+                            stopPlay();
+                        }
+                    } else if (['bfs', 'dfs', 'dijkstra'].includes(currentAlgo)) {
+                        const nodes = graphVisual.querySelectorAll('.graph-node');
+                        const edges = graphVisual.querySelectorAll('.graph-edge');
+                        const costs = graphVisual.querySelectorAll('.node-cost');
+                        nodes.forEach(n => { n.style.transform = ''; n.style.boxShadow = ''; n.style.background = '#fff'; n.style.color = '#000'; n.style.borderColor = '#000'; });
+                        
+                        // Traversal Data
+                        const algos = {
+                            bfs: { seq: [0, 1, 2, 3, 4, 5], edges: [[], [0], [1], [2], [3], [5]], name: "BFS Traversal", hl: "#1E3A8A", panel: "graphStatePanel", qs: [['A'], ['B','C'], ['C','D','E'], ['D','E','F'], ['E','F'], ['F']] },
+                            dfs: { seq: [0, 1, 3, 4, 2, 5], edges: [[], [0], [2], [3], [1], [5]], name: "DFS Search", hl: "#B91C1C", panel: "graphStatePanel", qs: [['A'], ['B','A'], ['D','B','A'], ['E','B','A'], ['C','A'], ['F','C','A']] },
+                            dijkstra: { seq: [0, 2, 5, 1, 4, 3], edges: [[], [1], [5], [0], [4], [2]], name: "Dijkstra Min-Cost", hl: "#F59E0B", panel: "dijkstraTablePanel",
+                                        costs: [['0','∞','∞','∞','∞','∞'], ['0','4','2','∞','∞','∞'], ['0','4','2','∞','5','3'], ['0','4','2','9','5','3'], ['0','4','2','9','5','3'], ['0','4','2','9','5','3']] }
+                        };
+                        const aData = algos[currentAlgo];
+                        
+                        document.getElementById(aData.panel).style.display = 'block';
+                        if (currentAlgo === 'bfs' || currentAlgo === 'dfs') {
+                            document.getElementById('graphStateTitle').textContent = currentAlgo === 'bfs' ? 'Queue (FIFO)' : 'Stack (LIFO)';
+                        }
+                        
+                        if (graphIndex < aData.seq.length) {
+                            if(currentAlgo === 'dijkstra') {
+                                for(let k=0; k<6; k++) { 
+                                    costs[k].textContent = aData.costs[graphIndex][k];
+                                    document.getElementById('dt-'+k).textContent = aData.costs[graphIndex][k];
+                                    if(aData.costs[graphIndex][k] !== (graphIndex===0?'\u221e':aData.costs[graphIndex-1][k])) {
+                                        document.getElementById('dt-'+k).parentElement.style.background = 'var(--accent-5)';
+                                        setTimeout(()=>document.getElementById('dt-'+k).parentElement.style.background='', 500);
+                                    }
+                                }
+                            } else {
+                                document.getElementById('graphStateList').innerHTML = aData.qs[graphIndex].map(x => `<div style="padding:2px; border:1px solid #000; background:#f0f0f0;">${x}</div>`).join('');
+                            }
+                        
+                            for (let i = 0; i <= graphIndex; i++) {
+                                const idx = aData.seq[i];
+                                nodes[idx].style.background = (i === graphIndex) ? aData.hl : aData.hl.replace(')','').replace('var(--','rgba(') + '0.2)'; // Faked transparency
+                                nodes[idx].style.borderColor = aData.hl;
+                                if (i === graphIndex) {
+                                    nodes[idx].style.transform = 'scale(1.2)';
+                                    nodes[idx].style.boxShadow = `0 0 20px ${aData.hl}`;
+                                    nodes[idx].style.color = (currentAlgo === 'bfs' || currentAlgo === 'dijkstra') ? '#111' : '#fff';
+                                }
+                            }
+                            // Reset edges
+                            edges.forEach(e => { e.style.stroke = 'var(--border-light)'; e.style.strokeWidth = '2'; });
+                            // Draw path
+                            for (let i = 0; i <= graphIndex; i++) {
+                                aData.edges[i].forEach(edgeIdx => {
+                                    if (edges[edgeIdx]) {
+                                        edges[edgeIdx].style.stroke = aData.hl;
+                                        edges[edgeIdx].style.strokeWidth = '4';
+                                    }
+                                });
+                            }
+                            const val = nodes[aData.seq[graphIndex]].textContent;
+                            updateLiveIteration(stepCounter++, aData.name, 'Visiting Node: ' + val.charAt(0), '-', false);
+                            highlightStep(1);
+                            graphIndex++;
+                        } else {
+                            if(currentAlgo === 'dijkstra') { for(let k=0; k<6; k++) costs[k].textContent = aData.costs[aData.costs.length-1][k]; }
+                            stopPlay();
+                            updateLiveIteration(stepCounter, aData.name + ' Complete', '-', '-', false);
+                            highlightStep(-1);
+                        }
+                    } else {
+                        updateUI(currentAlgo);
+                        const bars = arrayVisual.querySelectorAll('.array-bar');
+                        bars.forEach((bar, i) => {
+                            if (i % 2 === 0) {
+                                const currentH = parseFloat(bar.style.height) || 50;
+                                const delta = (Math.random() - 0.5) * 8;
+                                const newH = Math.min(90, Math.max(12, currentH + delta));
+                                bar.style.height = newH + '%';
+                            }
+                        });
+                    }
+                }, interval);
+            }
+
+            function stopPlay() {
+                if (playInterval) {
+                    clearInterval(playInterval);
+                    playInterval = null;
+                }
+                isPlaying = false;
+                playBtn.innerHTML = '<i class="fas fa-play"></i>';
+            }
+
+            playBtn.addEventListener('click', function() {
+                if (isPlaying) stopPlay();
+                else startPlay();
+            });
+
+            pauseBtn.addEventListener('click', stopPlay);
+
+            stepForwardBtn.addEventListener('click', function() {
+                stopPlay();
+                updateUI(currentAlgo);
+            });
+
+            stepBackwardBtn.addEventListener('click', function() {
+                stopPlay();
+                stepCounter = Math.max(0, stepCounter - 1);
+                stepCount.textContent = stepCounter;
+                const comps = Math.max(0, parseInt(statComparisons.textContent) - 2);
+                const swaps = Math.max(0, parseInt(statSwaps.textContent) - 1);
+                statComparisons.textContent = comps;
+                statSwaps.textContent = swaps;
+                updateLiveIteration(stepCounter, 'Step back', comps, swaps, algoMeta[currentAlgo]?.tree || false);
+            });
+
+            speedSlider.addEventListener('input', function() {
+                speedValue.textContent = this.value;
+                if (isPlaying) {
+                    stopPlay();
+                    startPlay();
+                }
+            });
+
+            speedBtn.addEventListener('click', function() {
+                const current = parseInt(speedSlider.value);
+                const newVal = current >= 7 ? 3 : current + 2;
+                speedSlider.value = newVal;
+                speedValue.textContent = newVal;
+                if (isPlaying) {
+                    stopPlay();
+                    startPlay();
+                }
+            });
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                // Skip shortcuts when user is typing in an input/textarea/select
+                const tag = e.target.tagName;
+                if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+                
+                if (e.key === ' ' || e.key === 'Space') { e.preventDefault(); playBtn.click(); }
+                if (e.key === 'ArrowRight') { e.preventDefault(); stepForwardBtn.click(); }
+                if (e.key === 'ArrowLeft') { e.preventDefault(); stepBackwardBtn.click(); }
+                const num = parseInt(e.key);
+                if (num >= 1 && num <= 9) {
+                    const items = [...algoItems];
+                    if (items[num - 1]) items[num - 1].click();
+                }
+            });
+
+            // Init
+            const defaultAlgo = 'stack';
+            document.querySelector(`.algo-item[data-algo="${defaultAlgo}"]`)?.classList.add('active');
+            switchAlgorithm(defaultAlgo);
+
+            // Initial randomize bars
+            setTimeout(() => {
+                const bars = arrayVisual.querySelectorAll('.array-bar');
+                bars.forEach((bar) => {
+                    const h = Math.floor(Math.random() * 60 + 20);
+                    bar.style.height = h + '%';
+                    const label = bar.querySelector('.bar-label');
+                    if (label) {
+                        const val = Math.floor((h / 100) * 40 + 5);
+                        label.textContent = val;
+                        bar.setAttribute('data-value', val);
+                    }
+                });
+                updateUI(currentAlgo);
+            }, 200);
+
+            // Glow pulse
+            const vizContainer = document.getElementById('vizContainer');
+            setInterval(() => {
+                vizContainer.classList.toggle('active-glow');
+            }, 3000);
+
+            // Draggable logic for Live Iteration Box
+            const dragItem = document.getElementById('liveIterationBox');
+            const dragHandle = document.getElementById('dragHandle');
+            
+            let active = false;
+            let currentX;
+            let currentY;
+            let initialX;
+            let initialY;
+            let xOffset = 0;
+            let yOffset = 0;
+
+            dragHandle.addEventListener("mousedown", dragStart, false);
+            document.addEventListener("mouseup", dragEnd, false);
+            document.addEventListener("mousemove", drag, false);
+
+            function dragStart(e) {
+                initialX = e.clientX - xOffset;
+                initialY = e.clientY - yOffset;
+                if (e.target === dragHandle || dragHandle.contains(e.target)) {
+                    active = true;
+                    dragItem.classList.add('dragging');
+                }
+            }
+            function dragEnd(e) {
+                active = false;
+                dragItem.classList.remove('dragging');
+            }
+            function drag(e) {
+                if (active) {
+                    e.preventDefault();
+                    currentX = e.clientX - initialX;
+                    currentY = e.clientY - initialY;
+                    xOffset = currentX;
+                    yOffset = currentY;
+                    dragItem.style.transform = "translate3d(" + currentX + "px, " + currentY + "px, 0)";
+                }
+            }
+
+            console.log('🚀 AlgoViz Light — ready!');
+        })();
+    </script>
+
+</body>
+</html>
