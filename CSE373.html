@@ -366,17 +366,18 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 1.5rem;
+            padding: 1rem;
             position: relative;
             background: var(--bg-body);
-            min-height: 400px;
+            min-height: 500px;
         }
 
         .viz-container {
             width: 100%;
-            max-width: 920px;
+            max-width: 100%;
             height: 100%;
-            max-height: 520px;
+            max-height: 140vh;
+            min-height: 480px;
             background: var(--bg-card);
             border-radius: var(--radius);
             border: 1px solid var(--border-light);
@@ -392,7 +393,7 @@
         .viz-container .viz-inner {
             width: 100%;
             height: 100%;
-            padding: 1.5rem;
+            padding: 1rem;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -414,9 +415,9 @@
 
         .array-bar {
             flex: 1;
-            max-width: 60px;
-            min-width: 20px;
-            border-radius: 6px 6px 0 0;
+            max-width: 72px;
+            min-width: 24px;
+            border-radius: 8px 8px 0 0;
             background: var(--gradient-main);
             transition: height 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.3s, transform 0.3s;
             position: relative;
@@ -432,10 +433,10 @@
 
         .array-bar .bar-label {
             position: absolute;
-            bottom: -22px;
+            bottom: -24px;
             left: 50%;
             transform: translateX(-50%);
-            font-size: 0.6rem;
+            font-size: 0.7rem;
             font-weight: 600;
             color: var(--text-muted);
             white-space: nowrap;
@@ -443,10 +444,10 @@
 
         .array-bar .bar-index {
             position: absolute;
-            top: -20px;
+            top: -22px;
             left: 50%;
             transform: translateX(-50%);
-            font-size: 0.5rem;
+            font-size: 0.55rem;
             font-weight: 500;
             color: var(--text-muted);
             opacity: 0.5;
@@ -471,6 +472,14 @@
         .array-bar.pivot {
             background: linear-gradient(135deg, #ec4899, #8b5cf6);
             box-shadow: 0 0 30px rgba(236, 72, 153, 0.25);
+        }
+        .array-bar.merge {
+            background: linear-gradient(135deg, #06b6d4, #0891b2);
+            box-shadow: 0 0 30px rgba(6, 182, 212, 0.35);
+        }
+        .array-bar.splitting {
+            background: linear-gradient(135deg, #a855f7, #d946ef);
+            box-shadow: 0 0 30px rgba(168, 85, 247, 0.25);
         }
 
         /* ——— Tree visual ——— */
@@ -860,21 +869,21 @@
 
         /* ——— Live iteration box ——— */
         .live-iteration-box {
-            position: absolute;
-            bottom: 1.5rem;
-            right: 1.5rem;
-            width: 260px;
-            max-width: 280px;
+            width: 100%;
+            max-width: 100%;
             background: var(--bg-card);
             border: 1px solid var(--border-light);
             border-radius: var(--radius-sm);
             padding: 0.8rem 1rem;
-            box-shadow: var(--shadow-card), 0 0 40px rgba(99, 102, 241, 0.06);
-            backdrop-filter: blur(8px);
+            box-shadow: var(--shadow-card);
             transition: var(--transition);
-            z-index: 10;
             font-size: 0.75rem;
             color: var(--text-secondary);
+        }
+
+        .live-iteration-box:hover {
+            border-color: var(--accent-1);
+            box-shadow: var(--shadow-hover);
         }
 
         .live-iteration-box .box-title {
@@ -1397,10 +1406,11 @@
                 gap: 8px;
             }
             .viz-canvas-wrapper {
-                padding: 0.75rem;
+                padding: 0.5rem;
             }
             .viz-container {
-                max-height: 380px;
+                max-height: 50vh;
+                min-height: 300px;
             }
             .array-bar {
                 min-width: 14px;
@@ -1477,7 +1487,7 @@
             <a href="dashboard.html" class="back-link" id="dashboardLink"><i class="fas fa-th-large"></i> Dashboard</a>
             <span class="badge"><i class="fas fa-play" style="font-size:0.6rem;margin-right:4px;"></i> Live</span>
             <span class="status-dot"></span>
-            <span style="font-size:0.7rem;color:var(--text-muted);" id="userDisplay">👤 Student</span>
+            <span style="font-size:0.7rem;color:var(--text-muted);" id="userDisplay">👤 Loading...</span>
         </div>
     </header>
 
@@ -1593,21 +1603,6 @@
                     </div>
                 </div>
 
-                <!-- LIVE ITERATION BOX -->
-                <div class="live-iteration-box" id="liveIterationBox">
-                    <div class="box-title"><i class="fas fa-sync-alt fa-fw"></i> Live Iteration</div>
-                    <div class="iteration-content" id="iterationContent">
-                        <div class="line"><span class="label">Step</span><span class="value" id="liveStep">0</span></div>
-                        <div class="line"><span class="label">Operation</span><span class="value highlight" id="liveOperation">—</span></div>
-                        <div class="line"><span class="label">Comparisons</span><span class="value" id="liveCompare">0</span></div>
-                        <div class="line"><span class="label">Swaps / Moves</span><span class="value" id="liveSwap">0</span></div>
-                        <div class="corner-tree" id="cornerTree" style="display:none;">
-                            <div class="corner-row"><span class="corner-node">root</span></div>
-                            <div class="corner-row"><span class="corner-node">left</span><span class="corner-node">right</span></div>
-                        </div>
-                    </div>
-                </div>
-
             </div>
 
         </main>
@@ -1676,6 +1671,22 @@
                 <div style="display:flex;justify-content:space-between;"><span>Algorithm</span><span style="color:var(--text-secondary);font-weight:500;" id="algoInfoName">Merge Sort</span></div>
                 <div style="display:flex;justify-content:space-between;margin-top:2px;"><span>Complexity</span><span style="color:var(--text-secondary);font-weight:500;" id="algoInfoComplexity">O(n log n)</span></div>
                 <div style="display:flex;justify-content:space-between;margin-top:2px;"><span>Category</span><span style="color:var(--text-secondary);font-weight:500;" id="algoInfoCategory">Divide & Conquer</span></div>
+            </div>
+
+            <hr class="divider" />
+
+            <div class="live-iteration-box" id="liveIterationBox">
+                <div class="box-title"><i class="fas fa-sync-alt fa-fw"></i> Live Iteration</div>
+                <div class="iteration-content" id="iterationContent">
+                    <div class="line"><span class="label">Step</span><span class="value" id="liveStep">0</span></div>
+                    <div class="line"><span class="label">Operation</span><span class="value highlight" id="liveOperation">—</span></div>
+                    <div class="line"><span class="label">Comparisons</span><span class="value" id="liveCompare">0</span></div>
+                    <div class="line"><span class="label">Swaps / Moves</span><span class="value" id="liveSwap">0</span></div>
+                    <div class="corner-tree" id="cornerTree" style="display:none;">
+                        <div class="corner-row"><span class="corner-node">root</span></div>
+                        <div class="corner-row"><span class="corner-node">left</span><span class="corner-node">right</span></div>
+                    </div>
+                </div>
             </div>
 
         </aside>
@@ -1825,6 +1836,10 @@
             }
 
             function showVisual(type) {
+                // Remove any lingering overlay elements (empty state, dev msg, etc.)
+                document.querySelectorAll('.empty-state').forEach(function(el) { el.remove(); });
+                var msg = document.querySelector('.dev-msg');
+                if (msg) msg.remove();
                 hideAllVisuals();
                 const map = {
                     array: arrayVisual,
@@ -1909,11 +1924,25 @@
                 });
             }
 
-            function renderGraphNodes(labels, states) {
+            // Helper: convert adjacency list to edge pairs
+            function adjListToEdges(adj) {
+                var result = [];
+                for (var i = 0; i < adj.length; i++) {
+                    for (var j = 0; j < adj[i].length; j++) {
+                        var v = adj[i][j];
+                        if (v > i) { // avoid duplicates
+                            result.push([i, v]);
+                        }
+                    }
+                }
+                return result;
+            }
+
+            function renderGraphNodes(labels, states, edgeHighlights, edges) {
                 graphVisual.innerHTML = '';
                 if (!labels || labels.length === 0) { showEmptyState(ALGO_META[currentAlgo] || ALGO_META.mergesort);
                     return; }
-                const positions = [
+                var positions = [
                     { top: '12%', left: '15%' },
                     { top: '8%', left: '50%' },
                     { top: '20%', left: '78%' },
@@ -1923,14 +1952,75 @@
                     { top: '80%', left: '25%' },
                     { top: '85%', left: '60%' }
                 ];
-                const labelChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-                labels.forEach((label, i) => {
-                    const el = document.createElement('div');
+                var labelChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                
+                // Convert edges if it's an adjacency list (array of arrays with variable lengths)
+                var edgePairs = edges;
+                if (edges && edges.length > 0 && Array.isArray(edges[0])) {
+                    // Check if it's an adjacency list (any sub-array has length > 2, or length == 8 nodes)
+                    var isAdjList = edges.some(function(e) { return e.length > 2; }) || edges.length >= 7;
+                    if (isAdjList) {
+                        edgePairs = adjListToEdges(edges);
+                    }
+                } else if (!edges || edges.length === 0) {
+                    edgePairs = [
+                        [0,1],[0,3],[1,2],[1,4],[2,5],[3,4],[3,6],[4,5],[4,7],[5,7],[6,7]
+                    ];
+                }
+                
+                // Get container dimensions for pixel calculations
+                var container = graphVisual;
+                var cw = container.clientWidth || 400;
+                var ch = container.clientHeight || 300;
+                
+                // Parse percentage to numeric pixel
+                function pctToPx(val, dimension) {
+                    var num = parseFloat(val);
+                    return (num / 100) * dimension;
+                }
+                
+                // Draw SVG edges
+                var svgNS = 'http://www.w3.org/2000/svg';
+                var svg = document.createElementNS(svgNS, 'svg');
+                svg.setAttribute('style', 'position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:visible;');
+                svg.setAttribute('width', '100%');
+                svg.setAttribute('height', '100%');
+                graphVisual.appendChild(svg);
+                
+                edgePairs.forEach(function(e) {
+                    var from = e[0], to = e[1];
+                    if (from >= positions.length || to >= positions.length) return;
+                    var p1 = positions[from];
+                    var p2 = positions[to];
+                    // Convert percentage strings to pixel numbers
+                    var x1 = pctToPx(p1.left, cw) + 22; // offset for node center (44/2)
+                    var y1 = pctToPx(p1.top, ch) + 22;
+                    var x2 = pctToPx(p2.left, cw) + 22;
+                    var y2 = pctToPx(p2.top, ch) + 22;
+                    var line = document.createElementNS(svgNS, 'line');
+                    line.setAttribute('x1', x1);
+                    line.setAttribute('y1', y1);
+                    line.setAttribute('x2', x2);
+                    line.setAttribute('y2', y2);
+                    line.setAttribute('stroke', '#cbd5e1');
+                    line.setAttribute('stroke-width', '2');
+                    var edgeKey = from + '-' + to;
+                    if (edgeHighlights && edgeHighlights[edgeKey]) {
+                        line.setAttribute('stroke', '#ef4444');
+                        line.setAttribute('stroke-width', '3');
+                        line.setAttribute('stroke-dasharray', '6,3');
+                    }
+                    svg.appendChild(line);
+                });
+                
+                // Draw nodes as positioned divs
+                labels.forEach(function(label, i) {
+                    var el = document.createElement('div');
                     el.className = 'graph-node';
-                    const pos = positions[i % positions.length];
+                    var pos = positions[i % positions.length];
                     el.style.top = pos.top;
                     el.style.left = pos.left;
-                    const displayLabel = typeof label === 'number' ? labelChars[label] || label : label;
+                    var displayLabel = typeof label === 'number' ? labelChars[label] || label : label;
                     el.textContent = displayLabel;
                     if (states && states[i]) {
                         el.classList.add(states[i]);
@@ -2100,6 +2190,7 @@
                     <div class="empty-sub">${hint}</div>
                 `;
                 vizInner.appendChild(empty);
+                statusMsg.style.display = 'block';
                 statusMsg.textContent = 'Empty — Load or add data to visualize';
                 dataSize.textContent = '0';
             }
@@ -2139,11 +2230,26 @@
                         const right = Math.min(left + 2 * size, n);
                         const leftArr = a.slice(left, mid);
                         const rightArr = a.slice(mid, right);
+
+                        // Show split phase: highlight both subarrays with different colors
+                        const splitHL = {};
+                        for (let si = left; si < mid; si++) splitHL[si] = 'splitting';
+                        for (let si = mid; si < right; si++) splitHL[si] = 'compare';
+                        steps.push({ step: stepId++, op: 'Split [' + left + '..' + (right-1) + ']', arr: [...a],
+                            comps, swaps: swps, highlight: splitHL });
+
                         let i = 0,
                             j = 0,
                             k = left;
                         while (i < leftArr.length && j < rightArr.length) {
                             comps++;
+                            // Show comparison step with compare color
+                            const cmpHL = {};
+                            cmpHL[left + i] = 'splitting';
+                            cmpHL[mid + j] = 'compare';
+                            steps.push({ step: stepId++, op: 'Compare ' + leftArr[i] + ' vs ' + rightArr[j], arr: [...a],
+                                comps, swaps: swps, highlight: cmpHL });
+
                             if (leftArr[i] <= rightArr[j]) {
                                 a[k++] = leftArr[i++];
                             } else {
@@ -2151,34 +2257,37 @@
                             }
                             swps++;
                             const hl = {};
-                            hl[k - 1] = 'swap';
-                            steps.push({ step: stepId++, op: `Merging [${left}..${right-1}]`, arr: [...a],
+                            hl[k - 1] = 'merge';
+                            steps.push({ step: stepId++, op: 'Merge -> [' + (k-1) + ']', arr: [...a],
                                 comps, swaps: swps, highlight: hl });
                         }
                         while (i < leftArr.length) {
                             a[k++] = leftArr[i++];
                             swps++;
                             const hl = {};
-                            hl[k - 1] = 'swap';
-                            steps.push({ step: stepId++, op: `Merging [${left}..${right-1}]`, arr: [...a],
+                            hl[k - 1] = 'merge';
+                            steps.push({ step: stepId++, op: 'Merge remaining [' + (k-1) + ']', arr: [...a],
                                 comps, swaps: swps, highlight: hl });
                         }
                         while (j < rightArr.length) {
                             a[k++] = rightArr[j++];
                             swps++;
                             const hl = {};
-                            hl[k - 1] = 'swap';
-                            steps.push({ step: stepId++, op: `Merging [${left}..${right-1}]`, arr: [...a],
+                            hl[k - 1] = 'merge';
+                            steps.push({ step: stepId++, op: 'Merge remaining [' + (k-1) + ']', arr: [...a],
                                 comps, swaps: swps, highlight: hl });
                         }
                     }
                     size *= 2;
                     const hl = {};
                     for (let i = 0; i < Math.min(n, size * 2); i++) hl[i] = 'sorted';
-                    steps.push({ step: stepId++, op: `Pass size ${size} complete`, arr: [...a], comps, swaps: swps,
+                    steps.push({ step: stepId++, op: 'Pass size ' + size + ' complete', arr: [...a], comps, swaps: swps,
                         highlight: hl });
                 }
-                steps.push({ step: stepId++, op: '✅ Sorted!', arr: [...a], comps, swaps: swps, highlight: {} });
+                // Final sorted state - mark all as sorted
+                const finalHL = {};
+                for (let i = 0; i < n; i++) finalHL[i] = 'sorted';
+                steps.push({ step: stepId++, op: 'Sorted!', arr: [...a], comps, swaps: swps, highlight: finalHL });
                 return steps;
             }
 
@@ -2350,6 +2459,435 @@
                 return steps;
             }
 
+            function generateBFSSteps(data) {
+                const steps = [];
+                let comps = 0;
+                let stepId = 0;
+                const graph = [
+                    [1, 3], [0, 2, 4], [1, 5], [0, 4, 6], [1, 3, 5, 7], [2, 4, 7], [3, 7], [4, 5, 6]
+                ];
+                const visited = [];
+                const queue = [0];
+                const order = [];
+                visited[0] = true;
+                
+                steps.push({ step: stepId++, op: 'Start BFS from node A', arr: data, comps: 0, swaps: 0, highlight: { 0: 'active' }, graphEdges: graph });
+                
+                while (queue.length > 0) {
+                    const node = queue.shift();
+                    order.push(node);
+                    const hl = {};
+                    hl[node] = 'visited';
+                    order.forEach(function(n) { hl[n] = 'visited'; });
+                    
+                    const neighbors = graph[node] || [];
+                    for (let i = 0; i < neighbors.length; i++) {
+                        const nb = neighbors[i];
+                        comps++;
+                        if (!visited[nb]) {
+                            visited[nb] = true;
+                            queue.push(nb);
+                            hl[nb] = 'active';
+                            steps.push({ step: stepId++, op: 'Visit ' + String.fromCharCode(65 + nb) + ' from ' + String.fromCharCode(65 + node), arr: data, comps: comps, swaps: 0, highlight: Object.assign({}, hl), graphEdges: graph });
+                        }
+                    }
+                }
+                
+                const doneHL = {};
+                order.forEach(function(n) { doneHL[n] = 'visited'; });
+                steps.push({ step: stepId++, op: '✅ BFS complete: ' + order.map(function(n) { return String.fromCharCode(65 + n); }).join(', '), arr: data, comps: comps, swaps: 0, highlight: doneHL, graphEdges: graph });
+                return steps;
+            }
+
+            function generateDFSSteps(data) {
+                const steps = [];
+                let comps = 0;
+                let stepId = 0;
+                const graph = [
+                    [1, 3], [0, 2, 4], [1, 5], [0, 4, 6], [1, 3, 5, 7], [2, 4, 7], [3, 7], [4, 5, 6]
+                ];
+                const visited = [];
+                const order = [];
+                
+                steps.push({ step: stepId++, op: 'Start DFS from node A', arr: data, comps: 0, swaps: 0, highlight: { 0: 'active' }, graphEdges: graph });
+                
+                function dfs(node) {
+                    if (visited[node]) return;
+                    visited[node] = true;
+                    order.push(node);
+                    const hl = {};
+                    order.forEach(function(n) { hl[n] = 'visited'; });
+                    hl[node] = 'active';
+                    
+                    const neighbors = graph[node] || [];
+                    for (let i = 0; i < neighbors.length; i++) {
+                        const nb = neighbors[i];
+                        comps++;
+                        if (!visited[nb]) {
+                            steps.push({ step: stepId++, op: 'DFS: ' + String.fromCharCode(65 + node) + ' → ' + String.fromCharCode(65 + nb), arr: data, comps: comps, swaps: 0, highlight: Object.assign({}, hl, { nb: 'dist' }), graphEdges: graph });
+                            dfs(nb);
+                        }
+                    }
+                }
+                
+                dfs(0);
+                
+                const doneHL = {};
+                order.forEach(function(n) { doneHL[n] = 'visited'; });
+                steps.push({ step: stepId++, op: '✅ DFS complete: ' + order.map(function(n) { return String.fromCharCode(65 + n); }).join(', '), arr: data, comps: comps, swaps: 0, highlight: doneHL, graphEdges: graph });
+                return steps;
+            }
+
+            function generatePrimSteps(data) {
+                const steps = [];
+                let comps = 0;
+                let stepId = 0;
+                const graph = [
+                    [1, 3], [0, 2, 4], [1, 5], [0, 4, 6], [1, 3, 5, 7], [2, 4, 7], [3, 7], [4, 5, 6]
+                ];
+                const weights = {};
+                const edges = [[0,1,4],[0,3,2],[1,2,5],[1,4,3],[2,5,6],[3,4,1],[3,6,7],[4,5,8],[4,7,9],[5,7,3],[6,7,10]];
+                edges.forEach(function(e) { weights[e[0]+'-'+e[1]] = e[2]; weights[e[1]+'-'+e[0]] = e[2]; });
+                
+                const inMST = [];
+                const parent = [];
+                const key = [];
+                const n = 8;
+                for (let i = 0; i < n; i++) { key[i] = Infinity; parent[i] = -1; }
+                key[0] = 0;
+                
+                steps.push({ step: stepId++, op: "Prim's: Start from A", arr: data, comps: 0, swaps: 0, highlight: { 0: 'active' }, graphEdges: graph });
+                
+                for (let count = 0; count < n - 1; count++) {
+                    let min = Infinity, u = -1;
+                    for (let v = 0; v < n; v++) {
+                        if (!inMST[v] && key[v] < min) { min = key[v]; u = v; }
+                    }
+                    if (u === -1) break;
+                    inMST[u] = true;
+                    
+                    const hl = {};
+                    for (let i = 0; i < n; i++) { if (inMST[i]) hl[i] = 'mst'; }
+                    hl[u] = 'active';
+                    
+                    const neighbors = graph[u] || [];
+                    for (let i = 0; i < neighbors.length; i++) {
+                        const v = neighbors[i];
+                        comps++;
+                        const w = weights[u+'-'+v] || 1;
+                        if (!inMST[v] && w < key[v]) {
+                            key[v] = w;
+                            parent[v] = u;
+                        }
+                    }
+                    
+                    const edgeHL = {};
+                    if (parent[u] !== -1) {
+                        edgeHL[parent[u]+'-'+u] = true;
+                    }
+                    steps.push({ step: stepId++, op: "Added " + String.fromCharCode(65 + u) + " to MST", arr: data, comps: comps, swaps: 0, highlight: hl, graphEdges: graph });
+                }
+                
+                const doneHL = {};
+                for (let i = 0; i < n; i++) { if (inMST[i]) doneHL[i] = 'mst'; }
+                steps.push({ step: stepId++, op: '✅ Prim\'s MST complete', arr: data, comps: comps, swaps: 0, highlight: doneHL, graphEdges: graph });
+                return steps;
+            }
+
+            function generateKruskalSteps(data) {
+                const steps = [];
+                let comps = 0;
+                let stepId = 0;
+                const graph = [
+                    [1, 3], [0, 2, 4], [1, 5], [0, 4, 6], [1, 3, 5, 7], [2, 4, 7], [3, 7], [4, 5, 6]
+                ];
+                const edges = [[0,1,4],[0,3,2],[1,2,5],[1,4,3],[2,5,6],[3,4,1],[3,6,7],[4,5,8],[4,7,9],[5,7,3],[6,7,10]];
+                edges.sort(function(a,b) { return a[2] - b[2]; });
+                
+                steps.push({ step: stepId++, op: "Kruskal's: Sort edges by weight", arr: data, comps: 0, swaps: 0, highlight: {}, graphEdges: graph });
+                
+                const parent = [];
+                for (let i = 0; i < 8; i++) parent[i] = i;
+                function find(x) { while (parent[x] !== x) { parent[x] = parent[parent[x]]; x = parent[x]; } return x; }
+                function union(x, y) { parent[find(x)] = find(y); }
+                
+                const mstEdges = [];
+                const mstNodes = [];
+                
+                edges.forEach(function(e) {
+                    const u = e[0], v = e[1], w = e[2];
+                    comps++;
+                    if (find(u) !== find(v)) {
+                        union(u, v);
+                        mstEdges.push(u + '-' + v);
+                        if (mstNodes.indexOf(u) === -1) mstNodes.push(u);
+                        if (mstNodes.indexOf(v) === -1) mstNodes.push(v);
+                        const hl = {};
+                        mstNodes.forEach(function(n) { hl[n] = 'mst'; });
+                        const edgeHL = {};
+                        mstEdges.forEach(function(eh) { edgeHL[eh] = true; });
+                        steps.push({ step: stepId++, op: 'Added edge ' + String.fromCharCode(65 + u) + '-' + String.fromCharCode(65 + v) + ' (w=' + w + ')', arr: data, comps: comps, swaps: 0, highlight: hl, graphEdges: graph });
+                    }
+                });
+                
+                const doneHL = {};
+                mstNodes.forEach(function(n) { doneHL[n] = 'mst'; });
+                steps.push({ step: stepId++, op: '✅ Kruskal\'s MST complete', arr: data, comps: comps, swaps: 0, highlight: doneHL, graphEdges: graph });
+                return steps;
+            }
+
+            function generateDijkstraSteps(data) {
+                const steps = [];
+                let comps = 0;
+                let stepId = 0;
+                const graph = [
+                    [1, 3], [0, 2, 4], [1, 5], [0, 4, 6], [1, 3, 5, 7], [2, 4, 7], [3, 7], [4, 5, 6]
+                ];
+                const weights = {};
+                const edges = [[0,1,4],[0,3,2],[1,2,5],[1,4,3],[2,5,6],[3,4,1],[3,6,7],[4,5,8],[4,7,9],[5,7,3],[6,7,10]];
+                edges.forEach(function(e) { weights[e[0]+'-'+e[1]] = e[2]; weights[e[1]+'-'+e[0]] = e[2]; });
+                
+                const dist = [];
+                const visited = [];
+                const n = 8;
+                for (let i = 0; i < n; i++) dist[i] = Infinity;
+                dist[0] = 0;
+                
+                steps.push({ step: stepId++, op: "Dijkstra: Start from A (dist=0)", arr: data, comps: 0, swaps: 0, highlight: { 0: 'active' }, graphEdges: graph });
+                
+                for (let count = 0; count < n - 1; count++) {
+                    let min = Infinity, u = -1;
+                    for (let v = 0; v < n; v++) {
+                        if (!visited[v] && dist[v] < min) { min = dist[v]; u = v; }
+                    }
+                    if (u === -1) break;
+                    visited[u] = true;
+                    
+                    const hl = {};
+                    for (let i = 0; i < n; i++) {
+                        if (visited[i]) hl[i] = 'visited';
+                        if (dist[i] < Infinity && !visited[i]) hl[i] = 'dist';
+                    }
+                    hl[u] = 'active';
+                    
+                    const neighbors = graph[u] || [];
+                    for (let i = 0; i < neighbors.length; i++) {
+                        const v = neighbors[i];
+                        comps++;
+                        const w = weights[u+'-'+v] || 1;
+                        if (!visited[v] && dist[u] + w < dist[v]) {
+                            dist[v] = dist[u] + w;
+                        }
+                    }
+                    
+                    steps.push({ step: stepId++, op: 'Dist to ' + String.fromCharCode(65 + u) + ' = ' + dist[u], arr: data, comps: comps, swaps: 0, highlight: hl, graphEdges: graph });
+                }
+                
+                const doneHL = {};
+                for (let i = 0; i < n; i++) { if (visited[i]) doneHL[i] = 'visited'; }
+                steps.push({ step: stepId++, op: '✅ Dijkstra complete. Dist: ' + dist.map(function(d, i) { return String.fromCharCode(65 + i) + '=' + (d === Infinity ? '∞' : d); }).join(', '), arr: data, comps: comps, swaps: 0, highlight: doneHL, graphEdges: graph });
+                return steps;
+            }
+
+            function generateLCSSteps(data) {
+                const steps = [];
+                let comps = 0;
+                let stepId = 0;
+                const X = 'ABCBDAB';
+                const Y = 'BDCABA';
+                const m = X.length, n = Y.length;
+                const dp = [];
+                for (let i = 0; i <= m; i++) { dp[i] = []; for (let j = 0; j <= n; j++) dp[i][j] = 0; }
+                
+                steps.push({ step: stepId++, op: 'LCS: Building DP table for "' + X + '" and "' + Y + '"', arr: data, comps: 0, swaps: 0, highlight: {}, dp: dp });
+                
+                for (let i = 1; i <= m; i++) {
+                    for (let j = 1; j <= n; j++) {
+                        comps++;
+                        if (X[i-1] === Y[j-1]) {
+                            dp[i][j] = dp[i-1][j-1] + 1;
+                        } else {
+                            dp[i][j] = Math.max(dp[i-1][j], dp[i][j-1]);
+                        }
+                        const hl = {};
+                        hl[i] = {};
+                        hl[i][j] = X[i-1] === Y[j-1] ? 'match' : 'compute';
+                        steps.push({ step: stepId++, op: 'LCS[' + i + '][' + j + '] = ' + dp[i][j], arr: data, comps: comps, swaps: 0, dp: dp, highlight: { row: i, col: j } });
+                    }
+                }
+                steps.push({ step: stepId++, op: '✅ LCS length = ' + dp[m][n], arr: data, comps: comps, swaps: 0, dp: dp, highlight: { row: m, col: n } });
+                return steps;
+            }
+
+            function generateRodCuttingSteps(data) {
+                const steps = [];
+                let comps = 0;
+                let stepId = 0;
+                const prices = [0, 1, 5, 8, 9, 10, 17, 17, 20];
+                const n = prices.length - 1;
+                const dp = [];
+                for (let i = 0; i <= n; i++) dp[i] = 0;
+                
+                // Build initial 2D grid: row 0 = indices (lengths), row 1 = dp values
+                function buildGrid(arr) {
+                    var g = [];
+                    var header = [];
+                    for (var k = 0; k <= n; k++) header.push('L' + k);
+                    g.push(header);
+                    var vals = [];
+                    for (var k = 0; k <= n; k++) vals.push(arr[k]);
+                    g.push(vals);
+                    return g;
+                }
+                
+                steps.push({ step: stepId++, op: 'Rod Cutting: Max price for length ' + n, arr: data, comps: 0, swaps: 0, highlight: {}, dp: buildGrid(dp) });
+                
+                for (let i = 1; i <= n; i++) {
+                    let maxVal = -Infinity;
+                    for (let j = 1; j <= i; j++) {
+                        comps++;
+                        maxVal = Math.max(maxVal, prices[j] + dp[i - j]);
+                    }
+                    dp[i] = maxVal;
+                    steps.push({ step: stepId++, op: 'Rod[' + i + '] = $' + dp[i], arr: data, comps: comps, swaps: 0, highlight: { row: 1, col: i }, dp: buildGrid(dp) });
+                }
+                steps.push({ step: stepId++, op: '✅ Max revenue = $' + dp[n], arr: data, comps: comps, swaps: 0, highlight: {}, dp: buildGrid(dp) });
+                return steps;
+            }
+
+            function generateHuffmanSteps(data) {
+                const steps = [];
+                let comps = 0;
+                let stepId = 0;
+                const freqs = [];
+                data.slice(0, 8).forEach(function(f, i) { freqs.push({ char: String.fromCharCode(65 + i), freq: f }); });
+                
+                steps.push({ step: stepId++, op: 'Huffman: Initial frequencies', arr: data, comps: 0, swaps: 0, highlight: {}, pq: freqs.slice().sort(function(a, b) { return a.freq - b.freq; }) });
+                
+                var pq = freqs.slice().sort(function(a, b) { return a.freq - b.freq; });
+                while (pq.length > 1) {
+                    var a = pq.shift();
+                    var b = pq.shift();
+                    var merged = { char: a.char + b.char, freq: a.freq + b.freq };
+                    comps++;
+                    pq.push(merged);
+                    pq.sort(function(a, b) { return a.freq - b.freq; });
+                    steps.push({ step: stepId++, op: 'Merge "' + a.char + '"(' + a.freq + ') + "' + b.char + '"(' + b.freq + ') = ' + merged.freq, arr: data, comps: comps, swaps: 0, highlight: { label: a.char + '+' + b.char }, pq: pq.slice() });
+                }
+                steps.push({ step: stepId++, op: '✅ Huffman tree built, root freq = ' + (pq.length ? pq[0].freq : 0), arr: data, comps: comps, swaps: 0, highlight: {}, pq: pq.slice() });
+                return steps;
+            }
+
+            function generateMatrixChainSteps(data) {
+                const steps = [];
+                let comps = 0;
+                let stepId = 0;
+                var p = data.slice(0, 6);
+                if (p.length < 3) p = [10, 20, 30, 40, 30];
+                var n = p.length - 1;
+                var m = [];
+                for (var i = 0; i <= n; i++) { m[i] = []; for (var j = 0; j <= n; j++) m[i][j] = 0; }
+                
+                steps.push({ step: stepId++, op: 'Matrix Chain: ' + n + ' matrices', arr: data, comps: 0, swaps: 0, highlight: {}, dp: m });
+                
+                for (var L = 2; L <= n; L++) {
+                    for (var i = 1; i <= n - L + 1; i++) {
+                        var j = i + L - 1;
+                        m[i][j] = Infinity;
+                        for (var k = i; k <= j - 1; k++) {
+                            comps++;
+                            var q = m[i][k] + m[k+1][j] + p[i-1] * p[k] * p[j];
+                            if (q < m[i][j]) m[i][j] = q;
+                        }
+                        steps.push({ step: stepId++, op: 'M[' + i + '][' + j + '] = ' + m[i][j], arr: data, comps: comps, swaps: 0, highlight: { row: i, col: j }, dp: m });
+                    }
+                }
+                steps.push({ step: stepId++, op: '✅ Min multiplications = ' + m[1][n], arr: data, comps: comps, swaps: 0, highlight: {} });
+                return steps;
+            }
+
+            function generateFractionalKnapsackSteps(data) {
+                const steps = [];
+                let comps = 0;
+                let stepId = 0;
+                const n = Math.min(data.length, 6);
+                const items = [];
+                for (let i = 0; i < n; i++) {
+                    items.push({
+                        label: String.fromCharCode(65 + i),
+                        value: Math.max(5, data[i] % 30 + 10),
+                        weight: Math.max(3, data[i] % 15 + 3),
+                        origIdx: i
+                    });
+                }
+                // Sort by value/weight ratio descending (copy to keep original order for display)
+                var sorted = items.slice().sort(function(a, b) { return (b.value / b.weight) - (a.value / a.weight); });
+                
+                steps.push({ step: stepId++, op: 'Fractional Knapsack: ' + n + ' items', arr: data, comps: 0, swaps: 0, highlight: {} });
+                
+                let capacity = 20;
+                let totalVal = 0;
+                const sel = [];
+                const cons = [];
+                
+                for (let i = 0; i < sorted.length; i++) {
+                    comps++;
+                    const item = sorted[i];
+                    const origI = item.origIdx;
+                    cons.push(origI);
+                    if (item.weight <= capacity) {
+                        totalVal += item.value;
+                        capacity -= item.weight;
+                        sel.push(origI);
+                        steps.push({ step: stepId++, op: 'Take whole ' + item.label + ' (val=' + item.value + ', wt=' + item.weight + ')', arr: data, comps: comps, swaps: 0, highlight: { selected: sel.slice(), considered: cons.slice() } });
+                    } else {
+                        const fraction = capacity / item.weight;
+                        totalVal += item.value * fraction;
+                        steps.push({ step: stepId++, op: 'Take ' + (fraction * 100).toFixed(0) + '% of ' + item.label + ' (val=' + (item.value * fraction).toFixed(1) + ')', arr: data, comps: comps, swaps: 0, highlight: { selected: sel.slice(), considered: cons.slice() } });
+                        capacity = 0;
+                        sel.push(origI);
+                        break;
+                    }
+                }
+                steps.push({ step: stepId++, op: '✅ Total value = ' + totalVal.toFixed(1), arr: data, comps: comps, swaps: 0, highlight: { selected: sel, considered: cons } });
+                return steps;
+            }
+
+            function generateActivitySelectionSteps(data) {
+                const steps = [];
+                let comps = 0;
+                let stepId = 0;
+                const n = Math.min(data.length, 8);
+                const acts = [];
+                for (let i = 0; i < n; i++) {
+                    acts.push({ label: 'A' + i, start: i, end: i + 1 + (data[i] % 4), origIdx: i });
+                }
+                // Sort by end time (copy to keep original order for display)
+                var sorted = acts.slice().sort(function(a, b) { return a.end - b.end; });
+                
+                steps.push({ step: stepId++, op: 'Activity Selection: ' + n + ' activities', arr: data, comps: 0, swaps: 0, highlight: {} });
+                
+                const sel = [];
+                const cons = [];
+                let lastEnd = 0;
+                
+                for (let i = 0; i < sorted.length; i++) {
+                    comps++;
+                    const act = sorted[i];
+                    const origI = act.origIdx;
+                    cons.push(origI);
+                    if (act.start >= lastEnd) {
+                        sel.push(origI);
+                        lastEnd = act.end;
+                        steps.push({ step: stepId++, op: 'Select ' + act.label + ' [' + act.start + ',' + act.end + ']', arr: data, comps: comps, swaps: 0, highlight: { selected: sel.slice(), considered: cons.slice() } });
+                    } else {
+                        steps.push({ step: stepId++, op: 'Skip ' + act.label + ' (conflict)', arr: data, comps: comps, swaps: 0, highlight: { selected: sel.slice(), considered: cons.slice() } });
+                    }
+                }
+                steps.push({ step: stepId++, op: '✅ Selected ' + sel.length + ' activities', arr: data, comps: comps, swaps: 0, highlight: { selected: sel, considered: cons } });
+                return steps;
+            }
+
             function generateSteps(algo, data) {
                 const meta = ALGO_META[algo] || ALGO_META.mergesort;
                 switch (algo) {
@@ -2361,13 +2899,37 @@
                         return generateBinarySearchSteps(data);
                     case 'heapsort':
                         return generateHeapsortSteps(data);
+                    case 'bfs':
+                        return generateBFSSteps(data);
+                    case 'dfs':
+                        return generateDFSSteps(data);
+                    case 'prim':
+                        return generatePrimSteps(data);
+                    case 'kruskal':
+                        return generateKruskalSteps(data);
+                    case 'dijkstra':
+                        return generateDijkstraSteps(data);
+                    case 'bellmanford':
+                        return generateDijkstraSteps(data); // Same logic as Dijkstra for demo
+                    case 'lcs':
+                        return generateLCSSteps(data);
+                    case 'rodCutting':
+                        return generateRodCuttingSteps(data);
+                    case 'matrixChain':
+                        return generateMatrixChainSteps(data);
+                    case 'fractionalKnapsack':
+                        return generateFractionalKnapsackSteps(data);
+                    case 'activitySelection':
+                        return generateActivitySelectionSteps(data);
+                    case 'huffman':
+                        return generateHuffmanSteps(data);
                     default:
                         // For non-array algorithms, return a simple placeholder
                         if (meta.visual === 'array') {
                             return generateGenericArraySteps(data, meta.name);
                         }
                         // For other visual types, return a minimal step set
-                        return [{ step: 0, op: `Visualizing ${meta.name}`, arr: data, comps: 0, swaps: 0,
+                        return [{ step: 0, op: 'Visualizing ' + meta.name, arr: data, comps: 0, swaps: 0,
                             highlight: {} }];
                 }
             }
@@ -2391,8 +2953,8 @@
                         break;
                     }
                     case 'graph': {
-                        const labels = data.slice(0, 8).map((v, i) => String.fromCharCode(65 + i));
-                        renderGraphNodes(labels, {});
+                        const labels = data.slice(0, 8).map(function(v, i) { return String.fromCharCode(65 + i); });
+                        renderGraphNodes(labels, {}, {}, []);
                         break;
                     }
                     case 'huffman': {
@@ -2476,32 +3038,83 @@
                         renderTreeNodes(nodes, step.highlight || {});
                         break;
                     }
-                    case 'graph': {
-                        const labels = step.arr.slice(0, 8).map((v, i) => String.fromCharCode(65 + i));
-                        const states = step.highlight || {};
-                        const stateArr = [];
-                        for (let i = 0; i < labels.length; i++) {
-                            stateArr.push(states[i] || '');
-                        }
-                        renderGraphNodes(labels, stateArr);
-                        break;
-                    }
                     case 'huffman': {
-                        // Keep static for now
+                        var data = step.arr || [];
+                        huffmanVisual.innerHTML = '';
+                        if (!data.length) { showEmptyState(ALGO_META.huffman); break; }
+                        
+                        // Show frequency bars at top
+                        var maxFreq = Math.max.apply(null, data.slice(0, 8));
+                        var barHtml = '<div style="display:flex;gap:6px;align-items:flex-end;justify-content:center;width:100%;height:80px;margin-bottom:8px;">';
+                        data.slice(0, 8).forEach(function(f, i) {
+                            var pct = maxFreq > 0 ? (f / maxFreq) * 100 : 0;
+                            var isHighlight = step.highlight && step.highlight.label && step.highlight.label.indexOf(String.fromCharCode(65 + i)) >= 0;
+                            barHtml += '<div style="flex:1;max-width:40px;display:flex;flex-direction:column;align-items:center;gap:2px;">';
+                            barHtml += '<span style="font-size:0.55rem;font-weight:600;color:var(--text-muted);">' + f + '</span>';
+                            barHtml += '<div style="width:100%;height:' + pct + '%;min-height:8px;border-radius:4px 4px 0 0;background:' + (isHighlight ? 'linear-gradient(135deg,#f59e0b,#ef4444)' : 'var(--gradient-main)') + ';box-shadow:' + (isHighlight ? '0 0 16px rgba(245,158,11,0.3)' : 'none') + ';transition:all 0.3s;"></div>';
+                            barHtml += '<span style="font-size:0.55rem;font-weight:600;color:var(--text-muted);">' + String.fromCharCode(65 + i) + '</span>';
+                            barHtml += '</div>';
+                        });
+                        barHtml += '</div>';
+                        
+                        // Show current PQ state as tree nodes
+                        var treeHtml = '<div class="huffman-tree">';
+                        if (step.pq && step.pq.length > 0) {
+                            // Show all PQ elements as rows
+                            var rows = [];
+                            var current = step.pq.slice();
+                            while (current.length > 0) {
+                                var row = [];
+                                var take = Math.min(current.length, Math.max(2, Math.pow(2, rows.length)));
+                                for (var r = 0; r < take && current.length > 0; r++) {
+                                    row.push(current.shift());
+                                }
+                                rows.push(row);
+                            }
+                            rows.forEach(function(row) {
+                                treeHtml += '<div class="huffman-row">';
+                                row.forEach(function(node) {
+                                    var isMergeHL = step.highlight && step.highlight.label && node.char && step.highlight.label.indexOf(node.char) >= 0;
+                                    treeHtml += '<span class="huffman-node' + (isMergeHL ? ' highlight' : '') + '" title="' + node.char + '">' + node.char + '<span style="font-size:0.55rem;color:var(--text-muted);margin-left:4px;">(' + node.freq + ')</span></span>';
+                                });
+                                treeHtml += '</div>';
+                            });
+                        } else {
+                            // Default: show frequencies
+                            treeHtml += '<div class="huffman-row">' + data.slice(0, 8).map(function(f, i) {
+                                return '<span class="huffman-node">' + String.fromCharCode(65 + i) + '<span style="font-size:0.55rem;color:var(--text-muted);margin-left:4px;">(' + f + ')</span></span>';
+                            }).join('') + '</div>';
+                        }
+                        treeHtml += '</div>';
+                        
+                        huffmanVisual.innerHTML = barHtml + treeHtml;
+                        huffmanVisual.style.display = 'flex';
                         break;
                     }
                     case 'dp': {
                         // Use the step data or build a grid
-                        const n = Math.min(step.arr.length, 6);
-                        const grid = [];
-                        for (let i = 0; i <= n; i++) {
-                            const row = [];
-                            for (let j = 0; j <= n; j++) {
-                                row.push(i === 0 || j === 0 ? 0 : Math.min(i, j));
+                        let grid;
+                        if (step.dp && step.dp.length > 0) {
+                            grid = step.dp;
+                        } else {
+                            const n = Math.min(step.arr.length, 6);
+                            grid = [];
+                            for (let i = 0; i <= n; i++) {
+                                const row = [];
+                                for (let j = 0; j <= n; j++) {
+                                    row.push(i === 0 || j === 0 ? 0 : Math.min(i, j));
+                                }
+                                grid.push(row);
                             }
-                            grid.push(row);
                         }
-                        renderDPGrid(grid, step.highlight || {});
+                        const hl = step.highlight || {};
+                        // Highlight specific cell if we have row/col
+                        var cellHL = {};
+                        if (hl.row && hl.col) {
+                            cellHL[hl.row] = {};
+                            cellHL[hl.row][hl.col] = 'match';
+                        }
+                        renderDPGrid(grid, cellHL);
                         break;
                     }
                     case 'knapsack': {
@@ -2524,6 +3137,19 @@
                         const sel = step.highlight && step.highlight.selected ? step.highlight.selected : [];
                         const cons = step.highlight && step.highlight.considered ? step.highlight.considered : [];
                         renderActivity(acts, sel, cons);
+                        break;
+                    }
+                    case 'graph': {
+                        // Graph steps have arr as node labels and special highlight properties
+                        const labels = step.arr.slice(0, 8).map((v, i) => String.fromCharCode(65 + i));
+                        const h = step.highlight || {};
+                        const stateArr = [];
+                        for (let i = 0; i < labels.length; i++) {
+                            stateArr.push(h[i] || '');
+                        }
+                        // Build edge highlights
+                        const edgeHL = h.edges || {};
+                        renderGraphNodes(labels, stateArr, edgeHL, (h.graphEdges || []));
                         break;
                     }
                     case 'string': {
@@ -2561,17 +3187,29 @@
                 liveSwap.textContent = swap || 0;
             }
 
+            // Auto-redirect: if opened directly (file://), redirect to localhost server for proper PHP/session support
+            if (window.location.protocol === 'file:') {
+                window.location.replace('http://localhost/algoviz/CSE373.html');
+            }
+            const API_BASE_373 = window.location.origin + window.location.pathname.replace(/[^/]*$/, '');
+
             function trackHistory(action) {
-                const user = localStorage.getItem('currentUser') || 'Student';
-                let users = JSON.parse(localStorage.getItem('users') || '{}');
-                if (!users[user]) {
-                    users[user] = { history: [] };
-                }
-                users[user].history.push({
-                    action: action,
-                    time: new Date().toLocaleString()
+                // Try PHP backend first
+                fetch(API_BASE_373 + 'history.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'same-origin',
+                    body: JSON.stringify({ action: action })
+                }).catch(function(err) {
+                    // Fallback to localStorage on network error
+                    const user = localStorage.getItem('currentUser') || 'Student';
+                    let users = JSON.parse(localStorage.getItem('users') || '{}');
+                    if (!users[user]) {
+                        users[user] = { password: '', history: [] };
+                    }
+                    users[user].history.push({ action: action, time: new Date().toLocaleString() });
+                    localStorage.setItem('users', JSON.stringify(users));
                 });
-                localStorage.setItem('users', JSON.stringify(users));
             }
 
             // ============================================================
@@ -2587,10 +3225,10 @@
                     return;
                 }
 
-                const empty = document.querySelector('.empty-state');
-                if (empty) empty.remove();
-                const dev = document.querySelector('.dev-msg');
-                if (dev) dev.remove();
+                // Aggressively remove any lingering empty state elements
+                document.querySelectorAll('.empty-state').forEach(function(el) { el.remove(); });
+                var devMsg = document.querySelector('.dev-msg');
+                if (devMsg) devMsg.remove();
 
                 arrayData = [...defaultData];
                 currentSteps = generateSteps(currentAlgo, arrayData);
@@ -2604,11 +3242,12 @@
 
                 const visType = meta.visual || 'array';
                 showVisual(visType);
+                // Hide status message when data is loaded — only show in empty state
+                statusMsg.style.display = 'none';
                 renderStaticView(visType, arrayData);
 
                 if (currentSteps.length > 0) applyStep(0);
                 updateLiveIteration(0, `Loaded ${meta.name} model`, 0, 0);
-                statusMsg.textContent = `Loaded model for ${meta.name} (${arrayData.length} items)`;
                 dataSize.textContent = arrayData.length;
                 trackHistory(`Loaded model: ${meta.name}`);
             }
@@ -2807,55 +3446,82 @@
             });
 
             insertBtn.addEventListener('click', function() {
-                const val = parseInt(valueInput.value);
-                if (isNaN(val)) {
-                    statusMsg.textContent = 'Please enter a valid number';
-                    return;
-                }
-                arrayData.push(val);
-                const meta = ALGO_META[currentAlgo] || ALGO_META.mergesort;
-                currentSteps = generateSteps(currentAlgo, arrayData);
-                currentStepIndex = currentSteps.length - 1;
-                const visType = meta.visual || 'array';
-                showVisual(visType);
-                if (currentSteps.length > 0) applyStep(currentStepIndex);
-                statusMsg.textContent = `Inserted ${val}`;
-                dataSize.textContent = arrayData.length;
-                trackHistory(`Inserted ${val}`);
-            });
-
-            deleteBtn.addEventListener('click', function() {
-                let idx = parseInt(indexInput.value);
-                if (isNaN(idx) || idx < 0 || idx >= arrayData.length) {
-                    if (arrayData.length > 0) {
-                        arrayData.pop();
-                    } else {
-                        statusMsg.textContent = 'No data to delete';
+                try {
+                    const rawVal = valueInput.value.trim();
+                    const val = parseInt(rawVal);
+                    if (isNaN(val)) {
+                        statusMsg.textContent = 'Please enter a valid number';
                         return;
                     }
-                } else {
-                    arrayData.splice(idx, 1);
-                }
-                const meta = ALGO_META[currentAlgo] || ALGO_META.mergesort;
-                if (arrayData.length > 0) {
+                    arrayData.push(val);
+                    const meta = ALGO_META[currentAlgo] || ALGO_META.mergesort;
                     currentSteps = generateSteps(currentAlgo, arrayData);
                     currentStepIndex = 0;
+                    stepCounter = 0;
                     const visType = meta.visual || 'array';
                     showVisual(visType);
                     if (currentSteps.length > 0) applyStep(0);
-                } else {
-                    showEmptyState(meta);
-                    currentSteps = [];
+                    statusMsg.textContent = `Inserted ${val}`;
+                    dataSize.textContent = arrayData.length;
+                    valueInput.value = '';
+                    valueInput.focus();
+                    trackHistory(`Inserted ${val}`);
+                } catch (err) {
+                    console.error('Insert error:', err);
+                    statusMsg.textContent = 'Error inserting data: ' + err.message;
                 }
-                statusMsg.textContent = `Deleted. ${arrayData.length} items remaining`;
-                dataSize.textContent = arrayData.length;
-                trackHistory('Deleted');
+            });
+
+            // Also handle Enter key on valueInput
+            valueInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    insertBtn.click();
+                }
+            });
+
+            deleteBtn.addEventListener('click', function() {
+                try {
+                    let idx = parseInt(indexInput.value);
+                    if (isNaN(idx) || idx < 0 || idx >= arrayData.length) {
+                        if (arrayData.length > 0) {
+                            arrayData.pop();
+                        } else {
+                            statusMsg.textContent = 'No data to delete';
+                            return;
+                        }
+                    } else {
+                        arrayData.splice(idx, 1);
+                    }
+                    const meta = ALGO_META[currentAlgo] || ALGO_META.mergesort;
+                    if (arrayData.length > 0) {
+                        currentSteps = generateSteps(currentAlgo, arrayData);
+                        currentStepIndex = 0;
+                        const visType = meta.visual || 'array';
+                        showVisual(visType);
+                        if (currentSteps.length > 0) applyStep(0);
+                    } else {
+                        showEmptyState(meta);
+                        currentSteps = [];
+                    }
+                    statusMsg.textContent = `Deleted. ${arrayData.length} items remaining`;
+                    dataSize.textContent = arrayData.length;
+                    indexInput.value = '';
+                    trackHistory('Deleted');
+                } catch (err) {
+                    console.error('Delete error:', err);
+                    statusMsg.textContent = 'Error deleting data: ' + err.message;
+                }
             });
 
             // ============================================================
             //  KEYBOARD SHORTCUTS
             // ============================================================
             document.addEventListener('keydown', function(e) {
+                // Skip shortcuts when user is typing in an input/textarea/select
+                const tag = e.target.tagName;
+                if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+                
                 const keyMap = {
                     '1': 'binarysearch', '2': 'mergesort', '3': 'quicksort',
                     '4': 'fractionalKnapsack', '5': 'activitySelection', '6': 'huffman',
@@ -2875,6 +3541,36 @@
                     playBtn.click();
                 }
             });
+
+            // ============================================================
+            //  CHECK PHP SESSION & UPDATE USER DISPLAY
+            // ============================================================
+            const userDisplayEl = document.getElementById('userDisplay');
+            if (userDisplayEl) {
+                try {
+                    fetch(API_BASE_373 + 'user.php', { credentials: 'same-origin' })
+                        .then(function(r) { return r.json(); })
+                        .then(function(result) {
+                            if (result.authenticated && result.user) {
+                                userDisplayEl.textContent = '👤 ' + result.user.username;
+                            } else {
+                                const localUser = localStorage.getItem('currentUser');
+                                if (localUser) {
+                                    userDisplayEl.textContent = '👤 ' + localUser;
+                                }
+                            }
+                        })
+                        .catch(function() {
+                            const localUser = localStorage.getItem('currentUser');
+                            if (localUser) {
+                                userDisplayEl.textContent = '👤 ' + localUser;
+                            }
+                        });
+                } catch(e) {
+                    var localUser = localStorage.getItem('currentUser');
+                    if (localUser) userDisplayEl.textContent = '👤 ' + localUser;
+                }
+            }
 
             // ============================================================
             //  INIT

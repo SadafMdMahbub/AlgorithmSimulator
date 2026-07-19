@@ -22,18 +22,37 @@
         .btn-back { text-decoration: none; color: var(--accent-1); font-weight: 600; }
         table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
         th, td { text-align: left; padding: 1rem; border-bottom: 1px solid #e2e8f0; }
-        th { color: var(--text-secondary); font-size: 0.9rem; text-transform: uppercase; }
+        th { color: var(--text-secondary); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em; }
         tr:last-child td { border-bottom: none; }
+        tr:hover td { background: #f8fafc; }
         .empty-msg { text-align: center; color: var(--text-secondary); padding: 2rem; }
+        .loading-msg { text-align: center; color: var(--text-secondary); padding: 2rem; }
+        .loading-msg i { font-size: 1.5rem; margin-bottom: 0.5rem; color: var(--accent-1); }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .fa-spinner { animation: spin 1s linear infinite; }
+        .stat-badge {
+            display: inline-block;
+            font-size: 0.75rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 100px;
+            background: rgba(99, 102, 241, 0.08);
+            color: var(--accent-1);
+            margin-bottom: 1rem;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>Usage History</h1>
+            <h1><i class="fas fa-history" style="color: var(--accent-1); margin-right: 10px;"></i> Usage History</h1>
             <a href="dashboard.html" class="btn-back"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
         </div>
-        <div id="historyTable">
+        <div id="loadingMsg" class="loading-msg">
+            <i class="fas fa-spinner fa-spinner"></i>
+            <p>Loading your history...</p>
+        </div>
+        <div id="historyTable" style="display: none;">
+            <div class="stat-badge" id="historyCount">0 entries</div>
             <table>
                 <thead>
                     <tr>
@@ -45,27 +64,79 @@
                 </tbody>
             </table>
         </div>
-        <p id="emptyMsg" class="empty-msg" style="display: none;">No history found.</p>
+        <p id="emptyMsg" class="empty-msg" style="display: none;">
+            <i class="fas fa-inbox" style="font-size: 2rem; color: var(--text-secondary); opacity: 0.4; display: block; margin-bottom: 0.5rem;"></i>
+            No history found. Start exploring courses!
+        </p>
     </div>
 
     <script>
-        const currentUser = localStorage.getItem('currentUser');
-        if (!currentUser) window.location.href = 'index.html';
-
-        const users = JSON.parse(localStorage.getItem('users') || '{}');
-        const history = users[currentUser]?.history || [];
-
-        const body = document.getElementById('historyBody');
-        if (history.length === 0) {
-            document.getElementById('historyTable').style.display = 'none';
-            document.getElementById('emptyMsg').style.display = 'block';
-        } else {
-            history.reverse().forEach(entry => {
-                const row = document.createElement('tr');
-                row.innerHTML = `<td>${entry.action}</td><td>${entry.time}</td>`;
-                body.appendChild(row);
-            });
+        // Auto-redirect: if opened directly (file://), redirect to localhost server for proper PHP/session support
+        if (window.location.protocol === 'file:') {
+            window.location.replace('http://localhost/algoviz/history.html');
         }
+        const API_BASE = window.location.origin + window.location.pathname.replace(/[^/]*$/, '');
+
+        async function loadHistory() {
+            try {
+                // Try PHP backend first
+                const response = await fetch(API_BASE + 'history.php', { credentials: 'same-origin' });
+                const result = await response.json();
+                
+                document.getElementById('loadingMsg').style.display = 'none';
+                
+                if (result.success && result.history && result.history.length > 0) {
+                    const body = document.getElementById('historyBody');
+                    document.getElementById('historyTable').style.display = 'block';
+                    document.getElementById('historyCount').textContent = result.history.length + ' entries';
+                    
+                    result.history.forEach(entry => {
+                        const row = document.createElement('tr');
+                        const actionCell = document.createElement('td');
+                        actionCell.innerHTML = `<i class="fas fa-circle" style="font-size: 0.4rem; color: var(--accent-1); margin-right: 8px; vertical-align: middle;"></i>${entry.action}`;
+                        const timeCell = document.createElement('td');
+                        timeCell.textContent = entry.time;
+                        row.appendChild(actionCell);
+                        row.appendChild(timeCell);
+                        body.appendChild(row);
+                    });
+                } else {
+                    document.getElementById('emptyMsg').style.display = 'block';
+                }
+            } catch (err) {
+                // Fallback: localStorage
+                document.getElementById('loadingMsg').style.display = 'none';
+                const currentUser = localStorage.getItem('currentUser');
+                if (!currentUser) {
+                    window.location.href = 'index.html';
+                    return;
+                }
+                
+                const users = JSON.parse(localStorage.getItem('users') || '{}');
+                const history = users[currentUser]?.history || [];
+                
+                if (history.length === 0) {
+                    document.getElementById('emptyMsg').style.display = 'block';
+                } else {
+                    const body = document.getElementById('historyBody');
+                    document.getElementById('historyTable').style.display = 'block';
+                    document.getElementById('historyCount').textContent = history.length + ' entries (local)';
+                    
+                    history.reverse().forEach(entry => {
+                        const row = document.createElement('tr');
+                        const actionCell = document.createElement('td');
+                        actionCell.innerHTML = `<i class="fas fa-circle" style="font-size: 0.4rem; color: var(--accent-1); margin-right: 8px; vertical-align: middle;"></i>${entry.action}`;
+                        const timeCell = document.createElement('td');
+                        timeCell.textContent = entry.time;
+                        row.appendChild(actionCell);
+                        row.appendChild(timeCell);
+                        body.appendChild(row);
+                    });
+                }
+            }
+        }
+
+        loadHistory();
     </script>
 </body>
 </html>

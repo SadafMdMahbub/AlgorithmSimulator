@@ -79,6 +79,18 @@
         }
         .course-card h3 { margin: 0 0 0.5rem 0; color: var(--text-primary); }
         .course-card p { margin: 0; color: var(--text-secondary); font-size: 0.9rem; }
+        .course-card .badge-new {
+            font-size: 0.6rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            padding: 3px 12px;
+            border-radius: 100px;
+            background: rgba(16, 185, 129, 0.12);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.15);
+            margin-top: 0.75rem;
+        }
         .btn-logout {
             padding: 0.5rem 1rem;
             background: #ef4444;
@@ -86,11 +98,18 @@
             border: none;
             border-radius: 8px;
             cursor: pointer;
+            transition: 0.2s ease;
         }
+        .btn-logout:hover { background: #dc2626; }
         .history-link {
             color: var(--accent-1);
             text-decoration: none;
             font-weight: 600;
+        }
+        .profile-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.85rem;
         }
     </style>
 </head>
@@ -107,17 +126,17 @@
     <main class="main-content">
         <h1>Select your course</h1>
         <div class="course-grid">
-            <a href="CSE373.html" class="course-card" onclick="trackCourse('CSE373')">
+            <a href="CSE373.html" class="course-card" onclick="trackCourse('CSE373 - Analysis of Algorithms')">
                 <i class="fas fa-project-diagram"></i>
                 <h3>CSE373</h3>
                 <p>Design and Analysis of Algorithms</p>
             </a>
-            <!-- Placeholders for other courses -->
-            <div class="course-card" style="opacity: 0.7; cursor: not-allowed;">
+            <a href="cse225.html" class="course-card" onclick="trackCourse('CSE225 - Data Structures')">
                 <i class="fas fa-database"></i>
                 <h3>CSE225</h3>
-                <p>Data Structures (Coming Soon)</p>
-            </div>
+                <p>Data Structures & Algorithms</p>
+                <span class="badge-new"><i class="fas fa-star" style="font-size:0.5rem;"></i> New</span>
+            </a>
             <div class="course-card" style="opacity: 0.7; cursor: not-allowed;">
                 <i class="fas fa-network-wired"></i>
                 <h3>CSE465</h3>
@@ -127,25 +146,63 @@
     </main>
 
     <script>
-        const currentUser = localStorage.getItem('currentUser');
-        if (!currentUser) {
-            window.location.href = 'index.html';
+        // Auto-redirect: if opened directly (file://), redirect to localhost server for proper PHP/session support
+        if (window.location.protocol === 'file:') {
+            window.location.replace('http://localhost/algoviz/dashboard.html');
         }
-        document.getElementById('userName').textContent = '👤 ' + currentUser;
+        const API_BASE = window.location.origin + window.location.pathname.replace(/[^/]*$/, '');
 
-        function logout() {
+        // Check if user is logged in via PHP session
+        async function checkAuth() {
+            try {
+                const response = await fetch(API_BASE + 'user.php', { credentials: 'same-origin' });
+                const result = await response.json();
+                if (result.authenticated && result.user) {
+                    document.getElementById('userName').textContent = '👤 ' + result.user.username;
+                } else {
+                    window.location.href = 'index.html';
+                }
+            } catch (err) {
+                // Fallback: check localStorage for backward compatibility
+                const currentUser = localStorage.getItem('currentUser');
+                if (currentUser) {
+                    document.getElementById('userName').textContent = '👤 ' + currentUser;
+                } else {
+                    window.location.href = 'index.html';
+                }
+            }
+        }
+
+        checkAuth();
+
+        async function logout() {
+            try {
+                await fetch(API_BASE + 'logout.php', { method: 'GET', credentials: 'same-origin' });
+            } catch (err) {
+                // Ignore errors
+            }
             localStorage.removeItem('currentUser');
             window.location.href = 'index.html';
         }
 
-        function trackCourse(courseName) {
-            let users = JSON.parse(localStorage.getItem('users') || '{}');
-            if(users[currentUser]) {
-                users[currentUser].history.push({ 
-                    action: `Accessed ${courseName}`, 
-                    time: new Date().toLocaleString() 
-                });
-                localStorage.setItem('users', JSON.stringify(users));
+        async function trackCourse(courseName) {
+            try {                    await fetch(API_BASE + 'history.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'same-origin',
+                        body: JSON.stringify({ action: 'Accessed ' + courseName })
+                    });
+            } catch (err) {
+                // Fallback to localStorage
+                let users = JSON.parse(localStorage.getItem('users') || '{}');
+                const currentUser = localStorage.getItem('currentUser');
+                if (users[currentUser]) {
+                    users[currentUser].history.push({ 
+                        action: `Accessed ${courseName}`, 
+                        time: new Date().toLocaleString() 
+                    });
+                    localStorage.setItem('users', JSON.stringify(users));
+                }
             }
         }
     </script>
