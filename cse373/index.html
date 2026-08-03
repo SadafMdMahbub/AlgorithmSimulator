@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AlgoViz · Professional CSE373</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+
+    <!-- Modular Styles -->
+    <link rel="stylesheet" href="css/main.css" />
+    <link rel="stylesheet" href="css/graph.css" />
+    <link rel="stylesheet" href="css/controls.css" />
+</head>
+<body>
+
+    <!-- Header Component -->
+    <header class="header">
+        <div class="header-brand">
+            <div class="brand-icon"><i class="fas fa-code"></i></div>
+            <span>AlgoViz</span>
+            <span class="version-badge">CSE373 PRO</span>
+        </div>
+        <div class="header-actions">
+            <a href="../dashboard.html" class="back-link"><i class="fas fa-th-large"></i> Dashboard</a>
+            <span class="badge"><i class="fas fa-play"></i> Live</span>
+            <span class="status-dot"></span>
+            <span id="userDisplay">👤 Loading...</span>
+        </div>
+    </header>
+
+    <div class="app-wrapper">
+
+        <!-- Sidebar Left: Algorithm Selection -->
+        <aside class="sidebar-left" id="sidebar">
+            <div class="section-title"><i class="fas fa-diagram-project"></i> Graph Algorithms</div>
+
+            <div class="algo-group">
+                <div class="algo-item" data-algo="BFS">
+                    <span class="icon"><i class="fas fa-arrows-alt-h"></i></span>
+                    <span class="label">Breadth First Search</span>
+                </div>
+                <div class="algo-item" data-algo="DFS">
+                    <span class="icon"><i class="fas fa-arrows-alt-v"></i></span>
+                    <span class="label">Depth First Search</span>
+                </div>
+                <div class="algo-item" data-algo="DIJKSTRA">
+                    <span class="icon"><i class="fas fa-route"></i></span>
+                    <span class="label">Dijkstra's Shortest Path</span>
+                </div>
+                <div class="algo-item" data-algo="PRIM">
+                    <span class="icon"><i class="fas fa-tree"></i></span>
+                    <span class="label">Prim's MST</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Visualization Area -->
+        <main class="center-area">
+            <div class="viz-header">
+                <div class="viz-title">
+                    <span id="currentAlgoName">Select an Algorithm</span>
+                </div>
+                <div class="viz-stats">
+                    <span>Nodes: <span class="num" id="nodeCount">0</span></span>
+                    <span>Steps: <span class="num" id="stepCount">0</span></span>
+                    <span id="pathLengthContainer" style="display:none; margin-left:10px;">
+                        Path Length: <span class="num" id="pathLength">0</span>
+                    </span>
+                    <span id="startNodeContainer" style="margin-left: 10px;">
+                        Start: <select id="startNodeSelect" class="small-select"><option value="">-</option></select>
+                        Target: <select id="targetNodeSelect" class="small-select"><option value="">-</option></select>
+                    </span>
+                </div>
+            </div>
+
+            <div class="viz-canvas-wrapper">
+                <div id="vizContainer" class="viz-container">
+                    <svg id="graphSvg" width="100%" height="100%"></svg>
+                    <div id="statusMsg" class="status-msg">Ready — Select an algorithm to begin</div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Sidebar Right: Controls & Stats -->
+        <aside class="sidebar-right">
+            <div class="panel-title"><i class="fas fa-edit"></i> Edit Graph</div>
+            <div class="mode-toggle">
+                <button class="btn-mode active" id="nodeModeBtn" title="Place Nodes"><i class="fas fa-plus-circle"></i> Node</button>
+                <button class="btn-mode" id="edgeModeBtn" title="Draw Edges"><i class="fas fa-project-diagram"></i> Edge</button>
+                <button class="btn-mode" id="editModeBtn" title="Edit Elements"><i class="fas fa-edit"></i> Edit</button>
+            </div>
+            <div class="control-group" style="margin-top: 10px;">
+                <label class="control-label">Edge Weight</label>
+                <div class="input-row">
+                    <input type="number" id="edgeWeightInput" value="1" min="1" max="99" style="width: 100%;" />
+                </div>
+            </div>
+            <div class="data-actions-row" style="margin-top: 10px;">
+                <button class="btn btn-warning" id="clearGraphBtn" style="width: 100%;"><i class="fas fa-eraser"></i> Clear Canvas</button>
+            </div>
+
+            <hr class="divider" />
+
+            <div class="panel-title"><i class="fas fa-sliders-h"></i> Simulation</div>
+
+            <div class="control-group">
+                <div class="controls-actions">
+                    <button class="btn-icon" id="playBtn" title="Play"><i class="fas fa-play"></i></button>
+                    <button class="btn-icon" id="pauseBtn" title="Pause"><i class="fas fa-pause"></i></button>
+                    <button class="btn-icon" id="prevBtn" title="Step Backward"><i class="fas fa-step-backward"></i></button>
+                    <button class="btn-icon" id="nextBtn" title="Step Forward"><i class="fas fa-step-forward"></i></button>
+                    <button class="btn-icon" id="resetBtn" title="Reset"><i class="fas fa-undo"></i></button>
+                </div>
+
+                <div class="slider-control">
+                    <label>Speed</label>
+                    <input type="range" id="speedSlider" min="1" max="10" value="5" />
+                </div>
+            </div>
+
+            <hr class="divider" />
+
+            <div class="panel-title"><i class="fas fa-chart-simple"></i> Execution Log</div>
+            <div class="log-container" id="executionLog">
+                <div class="log-entry">Waiting for algorithm...</div>
+            </div>
+        </aside>
+
+    </div>
+
+    <!-- Main Entry Point -->
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>
