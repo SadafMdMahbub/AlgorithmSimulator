@@ -4,6 +4,53 @@
 
 import { Logger } from '../utils/Logger.js';
 
+const ALGO_INFO = {
+    BFS: {
+        name: 'Breadth First Search',
+        complexity: 'O(V + E)',
+        description: 'Explores the graph layer by layer, visiting all neighbors of a node before moving to the next level.',
+        steps: [
+            'Add starting node to a queue.',
+            'While queue is not empty, dequeue a node.',
+            'Visit all unvisited neighbors and add them to the queue.',
+            'Repeat until all reachable nodes are visited.'
+        ]
+    },
+    DFS: {
+        name: 'Depth First Search',
+        complexity: 'O(V + E)',
+        description: 'Explores as far as possible along each branch before backtracking.',
+        steps: [
+            'Start at the root node and mark it as visited.',
+            'Recursively visit each unvisited neighbor.',
+            'Backtrack when no more unvisited neighbors exist.',
+            'Repeat until all nodes in the branch are processed.'
+        ]
+    },
+    DIJKSTRA: {
+        name: "Dijkstra's Algorithm",
+        complexity: 'O((V + E) log V)',
+        description: 'Finds the shortest path between nodes in a graph with non-negative edge weights.',
+        steps: [
+            'Assign a distance of zero to the start node and infinity to others.',
+            'Select the unvisited node with the smallest distance.',
+            'For each neighbor, calculate the tentative distance through the current node.',
+            'Update the distance if the new path is shorter.'
+        ]
+    },
+    PRIM: {
+        name: "Prim's Algorithm",
+        complexity: 'O(E log V)',
+        description: 'Finds the Minimum Spanning Tree (MST) for a weighted undirected graph.',
+        steps: [
+            'Start with an arbitrary node and add it to the MST.',
+            'Find the cheapest edge connecting a node in the MST to one outside.',
+            'Add that edge and node to the MST.',
+            'Repeat until all nodes are included.'
+        ]
+    }
+};
+
 export class UIController {
     constructor(engine) {
         this.engine = engine;
@@ -36,6 +83,7 @@ export class UIController {
         this.pathLengthContainer = document.getElementById('pathLengthContainer');
         this.currentAlgoName = document.getElementById('currentAlgoName');
         this.statusMsg = document.getElementById('statusMsg');
+        this.algoInfoContainer = document.getElementById('algoInfo');
 
         this.setupListeners();
         this.setupEngineHooks();
@@ -197,11 +245,30 @@ export class UIController {
         if (active) {
             active.classList.add('active');
             this.currentAlgoName.textContent = active.querySelector('.label').textContent;
+            this.updateAlgoInfo(algoKey);
         }
 
         // Dispatch event for app.js to handle algorithm switch
         const event = new CustomEvent('algoChanged', { detail: { algo: algoKey } });
         document.dispatchEvent(event);
+    }
+
+    updateAlgoInfo(algoKey) {
+        const info = ALGO_INFO[algoKey];
+        if (!info) return;
+
+        this.algoInfoContainer.innerHTML = `
+            <span class="info-title">${info.name}</span>
+            <div class="info-complexity">
+                <span>Time Complexity:</span>
+                <span class="complexity-badge">${info.complexity}</span>
+            </div>
+            <p class="info-desc">${info.description}</p>
+            <span class="info-steps-title">How it works:</span>
+            <ul class="info-steps">
+                ${info.steps.map(step => `<li>${step}</li>`).join('')}
+            </ul>
+        `;
     }
 
     addLogEntry(message) {

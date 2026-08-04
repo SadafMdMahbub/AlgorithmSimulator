@@ -187,3 +187,65 @@ input[type="range"]::-webkit-slider-thumb {
     cursor: pointer;
     box-shadow: 0 0 10px rgba(99, 102, 241, 0.2);
 }
+
+/* ——— INFO BAR ——— */
+.info-container {
+    background: white;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-light);
+    padding: 1rem;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+.info-title {
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.info-complexity {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+    font-size: 0.75rem;
+}
+
+.complexity-badge {
+    background: rgba(99, 102, 241, 0.1);
+    color: var(--accent-1);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+.info-desc {
+    margin-bottom: 1rem;
+}
+
+.info-steps-title {
+    font-weight: 600;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+    display: block;
+}
+
+.info-steps {
+    padding-left: 1.2rem;
+    margin: 0;
+}
+
+.info-steps li {
+    margin-bottom: 0.3rem;
+}
+
+.info-placeholder {
+    color: var(--text-muted);
+    text-align: center;
+    font-style: italic;
+    padding: 1rem 0;
+}
