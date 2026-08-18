@@ -10,13 +10,18 @@ import { BFS } from './algorithms/BFS.js';
 import { DFS } from './algorithms/DFS.js';
 import { Dijkstra } from './algorithms/Dijkstra.js';
 import { Prim } from './algorithms/Prim.js';
+import { Huffman } from './algorithms/Huffman.js';
+import { Knapsack } from './algorithms/Knapsack.js';
+import { TableRenderer } from './renderer/TableRenderer.js';
 import { SAMPLE_GRAPHS } from './data/SampleGraphs.js';
 import { Logger } from './utils/Logger.js';
 
 class App {
     constructor() {
         this.graph = new Graph();
-        this.renderer = new GraphRenderer('graphSvg');
+        this.graphRenderer = new GraphRenderer('graphSvg');
+        this.tableRenderer = new TableRenderer('tableContainer');
+        this.renderer = this.createCompositeRenderer();
         this.engine = new SimulationEngine(this.renderer);
         this.ui = new UIController(this.engine);
 
@@ -24,6 +29,68 @@ class App {
         this.selectedNodeId = null;
 
         this.init();
+    }
+
+    /**
+     * Builds a renderer that routes steps to the SVG graph renderer for graph
+     * algorithms, or to the table renderer for non-graph algorithms.
+     * @returns {Object}
+     */
+    createCompositeRenderer() {
+        const graphSvgEl = document.getElementById('graphSvg');
+        const tableContainerEl = document.getElementById('tableContainer');
+
+        return {
+            renderGraph: (graph, selectedNodeId) => {
+                tableContainerEl.style.display = 'none';
+                graphSvgEl.style.display = 'block';
+                this.graphRenderer.renderGraph(graph, selectedNodeId);
+            },
+            renderStep: (step) => {
+                const isTableStep = step && step.data && (step.data.kind === 'huffman' || step.data.kind === 'knapsack');
+                const detailBox = document.getElementById('stepDetailBox');
+
+                if (isTableStep) {
+                    graphSvgEl.style.display = 'none';
+                    tableContainerEl.style.display = 'block';
+                    detailBox.style.display = 'none'; // TableRenderer has its own logic box
+                    this.tableRenderer.renderStep(step);
+                } else {
+                    tableContainerEl.style.display = 'none';
+                    graphSvgEl.style.display = 'block';
+                    this.graphRenderer.renderStep(step);
+
+                    // Show logic box for graph algorithms
+                    if (step.operation) {
+                        detailBox.style.display = 'block';
+                        const op = step.operation.toLowerCase();
+                        const isResult = op.includes('path') || op.includes('complete') || op.includes('result') || op.includes('found');
+                        detailBox.className = isResult ? 'step-detail-box result' : 'step-detail-box';
+                        detailBox.innerHTML = `<strong>Current Operation:</strong> ${step.operation}`;
+                    } else {
+                        detailBox.style.display = 'none';
+                    }
+                }
+            },
+            clear: () => {
+                this.graphRenderer.clear();
+                this.tableRenderer.clear();
+                document.getElementById('stepDetailBox').style.display = 'none';
+            },
+            showTable: () => {
+                graphSvgEl.style.display = 'none';
+                tableContainerEl.style.display = 'block';
+            }
+        };
+    }
+
+    /**
+     * Returns true when the algorithm is not graph-based (rendered as a table).
+     * @param {string} algoKey
+     * @returns {boolean}
+     */
+    isNonGraphAlgo(algoKey) {
+        return algoKey === 'GREEDY' || algoKey === 'KNAPSACK';
     }
 
     init() {
@@ -37,7 +104,7 @@ class App {
         });
 
         document.addEventListener('startSimulation', (e) => {
-            this.handleStartSimulation(e.detail.startNodeId, e.detail.targetNodeId);
+            this.handleStartSimulation(e.detail);
         });
 
         document.addEventListener('addNode', (e) => this.handleAddNode(e.detail.x, e.detail.y));
@@ -125,10 +192,20 @@ class App {
         if (!this.activeAlgoKey) return;
         this.graph.reset();
         this.ui.showPathLength(0);
+
+        // Non-graph algorithms render into the table container
+        if (this.isNonGraphAlgo(this.activeAlgoKey)) {
+            this.renderer.showTable();
+            this.tableRenderer.clear();
+            return;
+        }
+
         this.updateView();
     }
 
-    handleStartSimulation(startNodeId, targetNodeId) {
+    handleStartSimulation(detail = {}) {
+        const { startNodeId, targetNodeId, params } = detail;
+
         if (!this.activeAlgoKey) {
             alert('Please select an algorithm first.');
             return;
@@ -137,20 +214,32 @@ class App {
         // 1. Reset state before starting
         this.graph.reset();
         this.ui.showPathLength(0);
-        this.updateView();
 
-        Logger.info(`Running simulation: ${this.activeAlgoKey} from ${startNodeId} to ${targetNodeId || 'all'}`);
-
+        let steps;
         let algo;
-        switch(this.activeAlgoKey) {
-            case 'BFS': algo = new BFS(this.graph); break;
-            case 'DFS': algo = new DFS(this.graph); break;
-            case 'DIJKSTRA': algo = new Dijkstra(this.graph); break;
-            case 'PRIM': algo = new Prim(this.graph); break;
-            default: return;
-        }
 
-        const steps = algo.run(startNodeId, targetNodeId);
+        // Non-graph algorithms take their parameters from the UI panel
+        if (this.activeAlgoKey === 'GREEDY') {
+            Logger.info('Running simulation: GREEDY (Huffman Coding)');
+            steps = new Huffman().run(params?.inputString || '');
+        } else if (this.activeAlgoKey === 'KNAPSACK') {
+            Logger.info('Running simulation: KNAPSACK (0/1 DP)');
+            steps = new Knapsack().run(params?.capacity || 0, params?.items || []);
+        } else {
+            this.updateView();
+
+            Logger.info(`Running simulation: ${this.activeAlgoKey} from ${startNodeId} to ${targetNodeId || 'all'}`);
+
+            switch(this.activeAlgoKey) {
+                case 'BFS': algo = new BFS(this.graph); break;
+                case 'DFS': algo = new DFS(this.graph); break;
+                case 'DIJKSTRA': algo = new Dijkstra(this.graph); break;
+                case 'PRIM': algo = new Prim(this.graph); break;
+                default: return;
+            }
+
+            steps = algo.run(startNodeId, targetNodeId);
+        }
 
         // 2. If a target is selected, calculate the path from the algorithm's result
         if (targetNodeId && this.activeAlgoKey !== 'PRIM') {

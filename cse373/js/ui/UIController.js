@@ -48,8 +48,32 @@ const ALGO_INFO = {
             'Add that edge and node to the MST.',
             'Repeat until all nodes are included.'
         ]
+    },
+    GREEDY: {
+        name: 'Huffman Coding (Greedy + HashMap)',
+        complexity: 'O(n log n)',
+        description: 'A greedy algorithm that builds an optimal prefix code. Character frequencies are stored in a HashMap, then the two smallest nodes are repeatedly merged into a binary tree.',
+        steps: [
+            'Count the frequency of every character into a HashMap.',
+            'Put every character into a min-heap keyed by frequency.',
+            'Greedily merge the two smallest nodes; push the combined node back.',
+            'Repeat until a single tree remains, then read the 0/1 codes from the tree.'
+        ]
+    },
+    KNAPSACK: {
+        name: '0/1 Knapsack (Dynamic Programming)',
+        complexity: 'O(n·W)',
+        description: 'Chooses a subset of items with maximum total value without exceeding the capacity. Uses a DP table where dp[i][w] is the best value using the first i items and capacity w.',
+        steps: [
+            'Initialize a table with rows for items and columns for capacities.',
+            'For each item i and capacity w, decide take vs skip.',
+            'Take only if the item fits and improves the value.',
+            'Backtrack through the table to recover the chosen items.'
+        ]
     }
 };
+
+const GRAPH_ALGOS = ['BFS', 'DFS', 'DIJKSTRA', 'PRIM'];
 
 export class UIController {
     constructor(engine) {
@@ -58,6 +82,7 @@ export class UIController {
         // State
         this.mode = 'node'; // 'node' or 'edge'
         this.selectedNode = null;
+        this.activeAlgoKey = null;
 
         // UI Elements
         this.vizContainer = document.getElementById('vizContainer');
@@ -85,8 +110,44 @@ export class UIController {
         this.statusMsg = document.getElementById('statusMsg');
         this.algoInfoContainer = document.getElementById('algoInfo');
 
+        // Non-graph algorithm elements
+        this.startNodeContainer = document.getElementById('startNodeContainer');
+        this.editGraphPanel = document.getElementById('editGraphPanel');
+        this.algoParamsPanel = document.getElementById('algoParamsPanel');
+        this.huffmanParams = document.getElementById('huffmanParams');
+        this.knapsackParams = document.getElementById('knapsackParams');
+        this.huffmanInput = document.getElementById('huffmanInput');
+        this.knapsackCapacity = document.getElementById('knapsackCapacity');
+        this.knapsackItems = document.getElementById('knapsackItems');
+        this.nodeCountContainer = document.getElementById('nodeCountContainer');
+
         this.setupListeners();
         this.setupEngineHooks();
+    }
+
+    /**
+     * Returns true when the active algorithm is not graph-based.
+     * @returns {boolean}
+     */
+    isNonGraphAlgo() {
+        return this.activeAlgoKey === 'GREEDY' || this.activeAlgoKey === 'KNAPSACK';
+    }
+
+    /**
+     * Shows/hides the UI panels depending on whether the selected algorithm
+     * works on a graph or uses the parameters panel.
+     * @param {string} algoKey
+     */
+    updateAlgoUI(algoKey) {
+        const isGraph = GRAPH_ALGOS.includes(algoKey);
+
+        this.editGraphPanel.style.display = isGraph ? 'block' : 'none';
+        this.algoParamsPanel.style.display = isGraph ? 'none' : 'block';
+        this.startNodeContainer.style.display = isGraph ? 'inline' : 'none';
+        this.nodeCountContainer.style.display = isGraph ? 'inline' : 'none';
+
+        this.huffmanParams.style.display = algoKey === 'GREEDY' ? 'block' : 'none';
+        this.knapsackParams.style.display = algoKey === 'KNAPSACK' ? 'block' : 'none';
     }
 
     setupListeners() {
@@ -105,6 +166,14 @@ export class UIController {
 
         // Simulation Controls
         this.playBtn.addEventListener('click', () => {
+            // Non-graph algorithms collect their inputs from the parameters panel
+            if (this.isNonGraphAlgo()) {
+                const params = this.collectParams();
+                if (!params) return;
+                this.dispatchEvent('startSimulation', { params });
+                return;
+            }
+
             const startNodeId = this.startNodeSelect.value;
             const targetNodeId = this.targetNodeSelect.value;
             if (!startNodeId) {
@@ -222,6 +291,60 @@ export class UIController {
         }
     }
 
+    /**
+     * Reads and validates the parameters panel inputs for non-graph algorithms.
+     * @returns {Object|null} Params object, or null if invalid.
+     */
+    collectParams() {
+        if (this.activeAlgoKey === 'GREEDY') {
+            const inputString = this.huffmanInput.value.trim();
+            if (!inputString) {
+                alert('Please enter a non-empty input string.');
+                return null;
+            }
+            return { inputString };
+        }
+
+        if (this.activeAlgoKey === 'KNAPSACK') {
+            const capacity = parseInt(this.knapsackCapacity.value, 10);
+            if (isNaN(capacity) || capacity <= 0) {
+                alert('Please enter a valid capacity (positive integer).');
+                return null;
+            }
+            const items = this.parseItems(this.knapsackItems.value);
+            if (!items) return null;
+            return { capacity, items };
+        }
+
+        return null;
+    }
+
+    /**
+     * Parses the items input of the form "weight:value,weight:value,...".
+     * @param {string} raw
+     * @returns {Array|null} List of items, or null if invalid.
+     */
+    parseItems(raw) {
+        const parts = raw.split(',').map(s => s.trim()).filter(s => s.length > 0);
+        if (parts.length === 0) {
+            alert('Please enter at least one item in the form weight:value.');
+            return null;
+        }
+
+        const items = [];
+        for (let i = 0; i < parts.length; i++) {
+            const [wStr, vStr] = parts[i].split(':').map(s => s.trim());
+            const weight = parseInt(wStr, 10);
+            const value = parseInt(vStr, 10);
+            if (isNaN(weight) || isNaN(value) || weight <= 0) {
+                alert(`Invalid item "${parts[i]}". Use the form weight:value (e.g. 2:3).`);
+                return null;
+            }
+            items.push({ name: `Item ${i + 1}`, weight, value });
+        }
+        return items;
+    }
+
     dispatchEvent(name, detail = {}) {
         const event = new CustomEvent(name, { detail });
         document.dispatchEvent(event);
@@ -240,6 +363,9 @@ export class UIController {
     }
 
     setActiveAlgo(algoKey) {
+        this.activeAlgoKey = algoKey;
+        this.updateAlgoUI(algoKey);
+
         this.algoItems.forEach(i => i.classList.remove('active'));
         const active = Array.from(this.algoItems).find(i => i.dataset.algo === algoKey);
         if (active) {
