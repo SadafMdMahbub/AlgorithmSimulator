@@ -1,0 +1,220 @@
+ALGOVIZ - CSE373 COMPREHENSIVE PROJECT DOCUMENTATION
+===================================================
+
+This document is your ultimate presentation guide. It explains every algorithm in your project with three parts:
+1. The Plain English Logic (How it works).
+2. The Code Explanation (Line-by-line breakdown).
+3. The Project Structure (Function calls before, during, and after simulation).
+
+--------------------------------------------------------------------------------
+1. THE CORE ENGINE: HOW WE ANIMATE (StepRecorder.js)
+--------------------------------------------------------------------------------
+EXPLANATION:
+We don't run the algorithm in real-time. Instead, we "record" it. The recorder takes a "Deep Clone" (a full copy) of the graph at every single step. These snapshots are stored in an array, which the Simulation Engine then plays back one by one.
+
+CODE:
+```javascript
+record(graph, operation) {
+    // 1. We copy all nodes and their current colors/distances
+    const nodeSnapshots = Array.from(graph.nodes.values()).map(node => ({
+        id: node.id, state: node.state, distance: node.distance
+    }));
+    // 2. We copy all edges and their highlight status
+    const edgeSnapshots = graph.edges.map(edge => ({ ...edge }));
+    // 3. We save this "moment" into our steps array
+    this.steps.push({ operation, nodes: nodeSnapshots, edges: edgeSnapshots });
+}
+```
+
+--------------------------------------------------------------------------------
+2. BREADTH-FIRST SEARCH (BFS.js)
+--------------------------------------------------------------------------------
+EXPLANATION:
+BFS is like a ripple in a pond. It starts at one point and moves outward layer by layer. It is the best way to find the shortest path in a graph where every road has the same cost.
+
+CODE:
+```javascript
+run(startNodeId) {
+    const queue = [this.graph.nodes.get(startNodeId)];
+    queue[0].visited = true;
+
+    while (queue.length > 0) {
+        const current = queue.shift(); // The node we are currently "standing on"
+        const neighbors = this.graph.getNeighbors(current.id);
+
+        for (const { node, edge } of neighbors) {
+            if (!node.visited) {
+                node.visited = true;
+                node.parent = current; // Remember where we came from
+                edge.highlighted = true;
+                queue.push(node); // Add to the "to-visit" list
+            }
+        }
+    }
+}
+```
+
+--------------------------------------------------------------------------------
+3. DEPTH-FIRST SEARCH (DFS.js)
+--------------------------------------------------------------------------------
+EXPLANATION:
+DFS is like exploring a maze by keeping your hand on the right wall. You go as deep as possible until you hit a dead end, then you "Backtrack" to the last intersection and try a different path.
+
+CODE:
+```javascript
+explore(node, targetNodeId) {
+    node.visited = true;
+    node.state = 'active';
+
+    const neighbors = this.graph.getNeighbors(node.id);
+    for (const { node: neighbor, edge } of neighbors) {
+        if (!neighbor.visited) {
+            neighbor.parent = node;
+            // GO DEEPER: Call the function again for the neighbor
+            const found = this.explore(neighbor, targetNodeId);
+            if (found) return true; // Stop looking if target is found
+        }
+    }
+    node.state = 'visited';
+    return false;
+}
+```
+
+--------------------------------------------------------------------------------
+4. DIJKSTRA'S ALGORITHM (Dijkstra.js)
+--------------------------------------------------------------------------------
+EXPLANATION:
+This is what Google Maps uses. It finds the shortest path when roads have different lengths (weights). It is "Greedy" because it always chooses the closest unvisited node to explore next.
+
+CODE:
+```javascript
+run(startNodeId) {
+    startNode.distance = 0; // The start is 0 miles away from itself
+    const unvisited = new Set(this.graph.nodes.values());
+
+    while (unvisited.size > 0) {
+        let current = this.findMinDistanceNode(unvisited); // The "Greedy" choice
+        unvisited.delete(current);
+
+        for (const { node: v, edge } of this.graph.getNeighbors(current.id)) {
+            const alt = current.distance + edge.weight; // New potential distance
+            if (alt < v.distance) {
+                v.distance = alt; // "Relax" the edge
+                v.parent = current;
+            }
+        }
+    }
+}
+```
+
+--------------------------------------------------------------------------------
+5. PRIM'S ALGORITHM - MST (Prim.js)
+--------------------------------------------------------------------------------
+EXPLANATION:
+Prim's creates a "Minimum Spanning Tree." It connects every node in the graph using the least amount of total edge weight possible, ensuring there are no loops (cycles).
+
+CODE:
+```javascript
+while (unvisited.size > 0) {
+    let u = this.findMinEdgeNode(unvisited); // Pick the cheapest edge available
+    unvisited.delete(u);
+    u.state = 'mst';
+
+    for (const { node: v, edge } of this.graph.getNeighbors(u.id)) {
+        if (unvisited.has(v) && edge.weight < v.distance) {
+            v.distance = edge.weight;
+            v.parent = u;
+        }
+    }
+}
+```
+
+--------------------------------------------------------------------------------
+6. 0/1 KNAPSACK - DYNAMIC PROGRAMMING (Knapsack.js)
+--------------------------------------------------------------------------------
+EXPLANATION:
+The Knapsack problem asks: "Which items should I pack to get the most value without breaking my bag?" We solve this by building a 2D Table where every cell represents the best possible value for a specific bag size.
+
+CODE:
+```javascript
+for (let i = 1; i <= items.length; i++) {
+    for (let w = 0; w <= capacity; w++) {
+        let valA = dp[i - 1][w]; // Value if we SKIP this item
+        if (item.weight <= w) {
+            // Value if we TAKE this item + best value of remaining space
+            let valB = dp[i - 1][w - item.weight] + item.value;
+            dp[i][w] = Math.max(valA, valB); // Decision: Maximize value
+        } else {
+            dp[i][w] = valA; // Item too heavy, must skip
+        }
+    }
+}
+```
+
+--------------------------------------------------------------------------------
+7. HUFFMAN CODING - GREEDY (Huffman.js)
+--------------------------------------------------------------------------------
+EXPLANATION:
+Huffman Coding is for data compression. It gives frequently used letters (like 'E') short codes (like '0') and rare letters (like 'Z') long codes (like '1110'). This makes the overall file size smaller.
+
+CODE BREAKDOWN:
+- `freqMap`: Counts how many times each letter appears.
+- `heap.sort()`: Always picks the two rarest letters to merge. This is the "Greedy" part.
+- `merged`: Creates a new "Parent" node that holds the sum of the two children.
+
+CODE:
+```javascript
+while (heap.length > 1) {
+    heap.sort((a, b) => a.freq - b.freq); // Find the two rarest nodes
+    const left = heap.shift();
+    const right = heap.shift();
+
+    // Create a new branch in the tree
+    const merged = { ch: null, freq: left.freq + right.freq, left, right };
+    heap.push(merged); // Put the new branch back to be merged again
+}
+```
+
+--------------------------------------------------------------------------------
+8. PROJECT LIFECYCLE: BEFORE, DURING, AND AFTER SIMULATION
+--------------------------------------------------------------------------------
+This section explains the sequence of function calls when a user interacts with the app.
+
+A. BEFORE SIMULATION (Setup & Initialization)
+   1. `App.init()`: Called when the page loads. It sets up the Graph and the Renderers.
+   2. `UIController.setupListeners()`: Sets up clicks for buttons like "Play", "Reset", and "Algorithm Selection".
+   3. `UIController.setActiveAlgo(algoKey)`: When you click an algorithm in the sidebar, this function updates the UI to show the correct parameters (e.g., showing the Knapsack bag capacity input).
+   4. `Graph.addNode()` / `Graph.addEdge()`: Called when you manually click the canvas to draw your own graph.
+
+B. DURING SIMULATION START (The Calculation Phase)
+   1. `UIController.playBtn.click()`: The user clicks play.
+   2. `App.handleStartSimulation()`: This is the main orchestrator. It checks which algorithm is selected.
+   3. `Algorithm.run()` (e.g., `BFS.run()`): The actual math happens here. This function runs INSTANTLY and calls `StepRecorder.record()` at every step.
+   4. `StepRecorder.getSteps()`: Returns the array of snapshots back to the `App`.
+   5. `SimulationEngine.setSteps(steps)`: The "Movie Player" receives the snapshots.
+   6. `SimulationEngine.play()`: Starts the playback timer.
+
+C. DURING SIMULATION PLAYBACK (The Animation Phase)
+   1. `SimulationEngine.run()`: A recursive function that calls `SimulationEngine.next()` repeatedly based on the "Speed" slider.
+   2. `SimulationEngine.next()`: Increments the current step index.
+   3. `Renderer.renderStep(snapshot)`: The most important function. It takes the snapshot data and draws it on the screen.
+      - If it's a Graph, `GraphRenderer.drawNode()` is called.
+      - If it's a Table, `TableRenderer.renderKnapsack()` is called.
+   4. `UIController.addLogEntry()`: Updates the text log on the right side of the screen with the step description.
+
+D. AFTER SIMULATION (The Result Phase)
+   1. `SimulationEngine.onPlaybackEnd()`: Triggered when the last snapshot is reached.
+   2. `Algorithm.calculatePath()`: For Dijkstra/BFS, this function walks backwards from the target to the start to find the final shortest path.
+   3. `Renderer.renderStep(finalResult)`: Draws the final result (e.g., highlighting the shortest path in Green or showing the final Knapsack summary).
+
+--------------------------------------------------------------------------------
+SUMMARY FOR PRESENTATION
+--------------------------------------------------------------------------------
+1. TIME COMPLEXITY:
+   - BFS/DFS: O(V + E) -> Linear.
+   - Dijkstra: O(E log V) -> Very fast for maps.
+   - Knapsack: O(N * W) -> Dependent on bag size.
+2. DATA STRUCTURES:
+   - We used Queues, Stacks, Sets, and 2D Arrays.
+3. VISUALIZATION:
+   - The project uses JavaScript to build HTML tables and SVG shapes dynamically, allowing the user to see exactly how the "math" works step-by-step.
