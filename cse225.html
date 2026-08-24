@@ -389,6 +389,7 @@
       <div style="font-size:.75rem;color:var(--text2);margin-top:6px;" id="previewName"></div>
     </div>
 
+    <!-- AI provider/API key UI temporarily disabled before publishing to GitHub.
     <div class="api-key-row">
       <label><i class="fas fa-server" style="color:var(--accent);"></i>&nbsp; AI Provider</label>
       <select class="api-key-input" id="providerSelect" onchange="updateProviderUI()" style="margin-bottom:10px;">
@@ -400,7 +401,7 @@
       </label>
       <input type="password" class="api-key-input" id="apiKeyInput" placeholder="AIza..." autocomplete="off"/>
       <div style="font-size:.7rem;color:var(--text2);margin-top:4px;">Used only in your browser. Never stored or shared.</div>
-    </div>
+    </div> -->
 
     <div style="margin-top:16px;display:flex;gap:10px;">
       <button class="bsm" style="flex:1;padding:12px;" onclick="runScan()" id="scanBtn">
@@ -1116,9 +1117,11 @@ function handleFile(file){
 
 async function runScan(){
   if(!scannedImageBase64){showToast('Upload an image first.');return;}
+  /*
   const provider=document.getElementById('providerSelect').value;
   const key=document.getElementById('apiKeyInput').value.trim();
   if(!key){showToast(`Enter your ${provider==='gemini'?'Gemini':'Groq'} API key.`);return;}
+  */
   const btn=document.getElementById('scanBtn');
   btn.disabled=true;btn.innerHTML='<i class="fas fa-spinner fa-spin"></i>&nbsp; Scanning...';
   document.getElementById('scanProgress').style.display='block';
@@ -1128,6 +1131,7 @@ async function runScan(){
   try{
     const prompt=`You are an algorithm recognition AI. Analyze this image carefully.\nRespond ONLY with valid JSON, no markdown, no code fences:\n{"algorithm":"bubble"|"insertion"|"selection"|"merge"|"quick"|"heap"|"binary"|"linear"|"bstbuild"|"bstsearch"|"inorder"|"preorder"|"postorder"|"unknown","confidence":0-100,"data":[numbers if visible else []],"target":number or null (only for binary/linear/bstsearch — the value being searched for, if shown),"description":"one sentence about what you see"}`;
     setStep(1);
+    /* AI API calls temporarily disabled. Re-enable this block when API access is configured.
     let raw='';
     if(provider==='gemini'){
       const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent`,{method:'POST',headers:{'x-goog-api-key':key,'Content-Type':'application/json'},body:JSON.stringify({contents:[{role:'user',parts:[{text:prompt},{inline_data:{mime_type:'image/jpeg',data:scannedImageBase64}}]}],generationConfig:{responseMimeType:'application/json'}})});
@@ -1153,6 +1157,8 @@ async function runScan(){
     }
     if(end===-1)throw new Error('Could not parse AI response.');
     result=JSON.parse(cleaned.slice(start,end+1));
+    */
+    throw new Error('AI scan is temporarily disabled.');
   }catch(err){
     console.error('Scan failed:',err);
     showToast('API issue: '+(err.message.slice(0,90))+' — Using Demo Mode!');
@@ -1207,6 +1213,7 @@ function loadScannedSim(){
 
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 
+/* Temporarily disabled with the AI provider controls.
 function updateProviderUI(){
   const p=document.getElementById('providerSelect').value;
   const label=document.getElementById('apiKeyLabelText');
@@ -1222,6 +1229,7 @@ function updateProviderUI(){
     input.placeholder='gsk_...';
   }
 }
+*/
 
 /* ═══════════════════════════════════════════
    KEYBOARD
@@ -1241,7 +1249,7 @@ document.addEventListener('keydown',e=>{
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2600);}
 
 window.addEventListener('load',()=>{
-  updateProviderUI();
+  // updateProviderUI(); // Temporarily disabled with the AI provider controls.
   array=[38,27,43,3,9,82,10,64,52,21];
   snapshots=generateSnapshots('bubble',[...array]);
   renderStep(0);
