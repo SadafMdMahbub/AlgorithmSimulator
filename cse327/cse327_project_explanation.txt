@@ -1,0 +1,150 @@
+ALGOVIZ - CSE327 PROJECT DOCUMENTATION
+=====================================
+
+This document mirrors the CSE373 explanation style and is a presentation-ready guide to the CSE327 SDLC model visualizer. It explains the data-driven model definitions, the helpers that compute geometry and steps, the playback lifecycle, and includes compact code examples you can reference during an interview.
+
+--------------------------------------------------------------------------------
+1. OVERVIEW
+--------------------------------------------------------------------------------
+PROJECT PURPOSE:
+The CSE327 app visualizes classic software development life-cycle (SDLC) models as interactive, step-driven scenes. Users can step through phases (e.g., Waterfall, Incremental, V-Model, Reuse) and see connections, flow, and validation relationships animated.
+
+MAIN CONCEPTS:
+- Models are plain objects describing `boxes`, `edges`, `nav`, and `steps`.
+- A small set of helpers builds repeated `steps` and connector geometry.
+- A SimulationEngine/Renderer consumes `steps` and animates the scene.
+
+PRESENTATION PITCH (30s):
+“This is a declarative SDLC visualizer: each model is JSON-like data and the app plays those data-driven steps as an animation. That makes the app easy to extend, test, and reason about.”
+
+--------------------------------------------------------------------------------
+2. DATA-FIRST ARCHITECTURE
+--------------------------------------------------------------------------------
+MODEL SHAPE (example fields):
+- `id`, `name`, `phaseTitle` — metadata.
+- `overview` — icon, title, description, bullets shown in sidebar.
+- `boxes[]` — layout descriptors: { x, y, w, h, num, label, step }.
+- `edges[]` — connector descriptors: path data `d`, `arrow`, and `enter` step index.
+- `nav[]` and `steps[]` — navigation entries and per-step content driving UI state.
+
+BENEFITS:
+- Add a model by creating an object matching the schema — no renderer changes required.
+- Steps are human-readable and can be authored by non-developers.
+
+--------------------------------------------------------------------------------
+3. CORE HELPERS
+--------------------------------------------------------------------------------
+`incStep(n, kind, status)` — builder for repeated increment steps.
+EXPLANATION:
+- Avoids duplication by returning an object for an increment-specific step (develop, validate, integrate).
+- Typical usage: the model `steps` array includes calls to `incStep()` to populate repeated entries.
+
+Minimal example:
+```javascript
+function incStep(n, kind, status) {
+    if (kind === "develop") return {
+        status,
+        chip: `Increment ${n} · 1 of 3`, icon: "fa-code", title: "Develop System Increment",
+        desc: `The functionality assigned to Increment ${n} is designed, coded and unit-tested.`,
+        activities: [`Design increment ${n}`, "Implement the functionality", "Unit test the new code"]
+    };
+    if (kind === "validate") return { /* ... */ };
+    return { /* integrate ... */ };
+}
+```
+
+`diag(from, to, opts = {})` — connector geometry builder.
+EXPLANATION:
+- Computes a straight connector and arrow polygon between two box centers.
+- Uses vector math: dx/dy → length → unit vector (ux,uy), then offsets endpoints by box half-width/height to avoid drawing into the box interior.
+
+Minimal example:
+```javascript
+function diag(from, to, opts = {}) {
+    const dx = to[0] - from[0], dy = to[1] - from[1];
+    const len = Math.hypot(dx, dy);
+    const ux = dx / len, uy = dy / len;
+    const gap = (opts.hw || 135) * Math.abs(ux) + (opts.hh || 32) * Math.abs(uy) + 8;
+    const sx = from[0] + ux * gap, sy = from[1] + uy * gap;
+    const ex = to[0] - ux * gap, ey = to[1] - uy * gap;
+    const tx = ex + ux * 9, ty = ey + uy * 9;
+    // return path and arrow
+    return { d: `M ${sx} ${sy} L ${ex} ${ey}`, arrow: `M ... Z` };
+}
+```
+
+--------------------------------------------------------------------------------
+4. STEP-DRIVEN PLAYBACK
+--------------------------------------------------------------------------------
+LIFECYCLE:
+1. App initializes and registers models and UI listeners.
+2. User selects a model; `UIController` sets active model and displays overview.
+3. `App` builds or loads the model's `steps[]` array.
+4. `SimulationEngine.setSteps(steps)` is called to provide the playback sequence.
+5. `SimulationEngine.play()` advances a timed loop, calling `Renderer.renderStep(snapshot)` for each step.
+
+WHAT A STEP CONTAINS:
+- `status`, `chip`, `title`, `desc`, `activities` (content for text panels).
+- Visual cues are encoded via `boxes`/`edges` `enter` indices and runtime flags (e.g., highlight, dashed).
+
+PERFORMANCE NOTE:
+- Each playback frame renders only current state from the step object — complexity per frame is O(visible elements).
+- If `steps` becomes very large, consider generating them on demand or using compact diffs instead of full snapshots.
+
+--------------------------------------------------------------------------------
+5. MODEL EXAMPLES (HIGH-LEVEL)
+--------------------------------------------------------------------------------
+WATERFALL:
+- Linear, sequential phases represented as vertically offset `boxes` with downward `edges` pointing to the next `enter` index.
+
+INCREMENTAL:
+- Groups of mini-steps per increment (develop → validate → integrate). Uses `incStep()` to keep step definitions concise.
+
+V-MODEL:
+- Left arm design phases and right-arm testing phases; dashed edges connect corresponding design ↔ test levels.
+
+REUSE:
+- Shows a component library store feeding into design and development; edges include `activeRange` to highlight interactions.
+
+--------------------------------------------------------------------------------
+6. UI AND CONTROLS
+--------------------------------------------------------------------------------
+KEY FUNCTIONS / FILES:
+- `app.js` – registers models and bootstraps the UI.
+- `ui/UIController.js` – handles user interactions, active model switching, play/pause and nav.
+- `renderer/*` – contains functions that draw boxes, edges and arrows in SVG/Canvas.
+- `simulation/*` – `SimulationEngine` and any `StepRecorder` if snapshots are produced.
+
+USER ACTION FLOW:
+- Select model → click Play → simulation engine iterates steps → renderer draws each step → UI log updates.
+
+--------------------------------------------------------------------------------
+7. TESTING, EXTENSION & MAINTENANCE
+--------------------------------------------------------------------------------
+TESTS:
+- Unit-test `incStep()` outputs for expected object shapes.
+- Unit-test `diag()` for a handful of geometry cases (horizontal, vertical, diagonal) and short/long distances.
+
+EXTENDING:
+- To add a new SDLC model: create a new object following the existing pattern, append to model registry in `app.js`, and add an overview entry in the UI.
+
+MAINTENANCE TIPS:
+- Keep box sizes and hw/hh defaults in `diag()` consistent with CSS layout.
+- Store repeated text in `steps` as localized strings if internationalization is needed.
+
+--------------------------------------------------------------------------------
+8. PRESENTATION SUMMARY (FOR INTERVIEWS)
+--------------------------------------------------------------------------------
+1. Architecture: data-driven models → step arrays → SimulationEngine → Renderer.
+2. Key helpers: `incStep()` (DRY step creation), `diag()` (connector math).
+3. Strengths: easy to add models, decoupled rendering, testable helpers.
+4. Weaknesses: absolute layout assumptions; large `steps` arrays may tax memory.
+
+Quick pitch: “CSE327 models software processes as data objects and plays them back as an animation; it’s a compact, testable, and extensible declarative visualizer suitable for teaching and demoing SDLC concepts.”
+
+--------------------------------------------------------------------------------
+REFERENCES
+--------------------------------------------------------------------------------
+- See `app.js` and `js/` modules for implementation: [cse327/app.js](app.js) and [cse327/js](js)
+
+END
